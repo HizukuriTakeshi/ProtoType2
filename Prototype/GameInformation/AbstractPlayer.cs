@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Prototype.GameInformation
 {
-
+	//test
     abstract class AbstractPlayer
     {
         #region [フィールド]
