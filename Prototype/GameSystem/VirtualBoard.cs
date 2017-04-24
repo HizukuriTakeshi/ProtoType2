@@ -20,6 +20,8 @@ namespace Prototype.GameSystem
         /// </summary>
         private Object[,] m_Board = new Object[8, 6];
 
+		private GhostType[,] board = new GhostType[6, 6];
+
         private List<Ghost> p1GhostList = new List<Ghost>();
         private List<Ghost> p2GhostList = new List<Ghost>();
 
@@ -27,7 +29,7 @@ namespace Prototype.GameSystem
         #endregion
 
 
-        #region　[アクセサ]
+        #region [アクセサ]
         /// <summary>
         /// Objectのアクセサ
         /// </summary>
@@ -56,6 +58,16 @@ namespace Prototype.GameSystem
                 return this.m_Board;
             }
         }
+
+		public GhostType[,] Board{
+			set{
+				this.board = value;
+			}
+
+			get{
+				return board;
+			}
+		}
 
         public List<Ghost> P1ghostList
         {
@@ -139,14 +151,16 @@ namespace Prototype.GameSystem
                 }
             }
 
-            resetGhostPostion();
-            setGhostPostion();
+            ResetGhostPostion();
+            SetGhostPostionInVirtual();
+			ResetGhostPositionInBoard();
+			SetGhostPositionInBoard();
 
         }
         #endregion
 
         #region [パブリックメソッド]
-        public void setGhostPostion()
+        public void SetGhostPostionInVirtual()
         {
             foreach (Ghost g in P1ghostList)
             {
@@ -158,7 +172,63 @@ namespace Prototype.GameSystem
                 M_Board[g.P.X, g.P.Y] = Object.P2;
             }
         }
-        public void resetGhostPostion()
+
+		public void SetGhostPositionInBoard(){
+			//P1リスト
+			foreach(Ghost g in P1ghostList){
+				//vb->b変換
+				int x = g.P.X - 1;
+				int y = g.P.Y;
+
+				//例外処理
+				if(x<0 || y <0 || x > 6 || y > 6){
+					
+				}else{
+					if(g.Gt.Equals(GhostAttribute.evil)){
+						Board[x, y] = GhostType.P1GhostEvil;
+					}else if(g.Gt.Equals(GhostAttribute.good)){
+						Board[x, y] = GhostType.P1GhostGood;
+					}else{
+						Board[x, y] = GhostType.Blank;
+					}
+
+				}
+			}
+
+			foreach (Ghost g in P2ghostList)
+			{
+				//vb->b変換
+				int x = g.P.X - 1;
+				int y = g.P.Y;
+
+				//例外処理
+				if (x < 0 || y < 0 || x > 6 || y > 6)
+				{
+
+				}
+				else
+				{
+					if (g.Gt.Equals(GhostAttribute.evil))
+					{
+						Board[x, y] = GhostType.P2GhostEvil;
+					}
+					else if (g.Gt.Equals(GhostAttribute.good))
+					{
+						Board[x, y] = GhostType.P2GhostEvil;
+					}
+					else
+					{
+						Board[x, y] = GhostType.Blank;
+					}
+
+				}
+			}
+
+		}
+
+
+
+        public void ResetGhostPostion()
         {
             for (int i = 0; i < M_Board.GetLength(0); i++)
             {
@@ -168,6 +238,17 @@ namespace Prototype.GameSystem
                 }
             }
         }
+
+		public void ResetGhostPositionInBoard(){
+			for (int i = 0; i < Board.GetLength(0); i++)
+			{
+				for (int j = 0; j < Board.GetLength(1); j++)
+				{
+					Board[i, j] = GhostType.Blank;
+				}
+			}
+
+		}
 
 
         public int GetSamePosGhostIndex(List<Ghost> glist, Position p)

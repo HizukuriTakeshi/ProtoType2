@@ -263,8 +263,10 @@ namespace Prototype.GameSystem
                 }
             }
 
-            Vb.resetGhostPostion();
-            Vb.setGhostPostion();
+            Vb.ResetGhostPostion();
+			Vb.ResetGhostPositionInBoard();
+            Vb.SetGhostPostionInVirtual();
+			Vb.SetGhostPositionInBoard();
 
         }
 
@@ -462,6 +464,24 @@ namespace Prototype.GameSystem
             }
         }
 
+		public void DisplayBoard()
+		{
+			for (int i = 0; i < Vb.Board.GetLength(1); i++)
+			{
+				Console.Write("{0,11} ", i);
+			}
+			Console.WriteLine();
+			for (int i = 0; i < Vb.Board.GetLength(0); i++)
+			{
+				Console.Write("{0} ", i);
+				for (int j = 0; j < Vb.Board.GetLength(1); j++)
+				{
+					Console.Write("{0,11} ", Vb.Board[i, j]);
+				}
+				Console.WriteLine();
+			}
+		}
+
         /// <summary>
         /// テスト用Move入力関数(コンソールから)
         /// </summary>
@@ -472,7 +492,8 @@ namespace Prototype.GameSystem
             Console.WriteLine("x");
             int x = int.Parse(Console.ReadLine());
             Console.WriteLine("y");
-            int y = int.Parse(Console.ReadLine());
+
+			int y = int.Parse(Console.ReadLine());
             Console.WriteLine("gm");
             string gmString = Console.ReadLine();
 
