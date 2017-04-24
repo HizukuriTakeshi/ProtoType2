@@ -224,13 +224,15 @@ namespace Prototype.GameSystem
                 {
                     if (g.P.X == 0 && g.P.Y == 0 || g.P.X == 0 && g.P.Y == 5)
                     {
-						P1ghostList.Remove(g);
-						if (g.Gt.Equals((GhostType.good)))
-						{
-							return true;
-						}else{
-							break;
-						}
+                        P1ghostList.Remove(g);
+                        if (g.Gt.Equals((GhostType.good)))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            break;
+                        }
 
                     }
                 }
@@ -239,19 +241,20 @@ namespace Prototype.GameSystem
             {
                 foreach (Ghost g in P2ghostList)
                 {
-					if (g.P.X == 7 && g.P.Y == 0 || g.P.X == 7 && g.P.Y == 5)
-					{
-						P2ghostList.Remove(g);
+                    if (g.P.X == 7 && g.P.Y == 0 || g.P.X == 7 && g.P.Y == 5)
+                    {
+                        P2ghostList.Remove(g);
 
-						if (g.Gt.Equals((GhostType.good)))
-						{
-							return true;
-						}
-						else{
-							break;
-						}
-					}
-				
+                        if (g.Gt.Equals((GhostType.good)))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
                 }
 
             }
