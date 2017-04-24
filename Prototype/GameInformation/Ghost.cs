@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,7 +12,7 @@ namespace Prototype.GameInformation
         /// <summary>
         /// ゴーストのタイプ
         /// </summary>
-        private GhostType gt;
+        private GhostAttribute gt;
 
         private Position initP;
         private Position p;
@@ -25,7 +25,7 @@ namespace Prototype.GameInformation
         /// <summary>
         /// ゴーストのタイプのアクセサ
         /// </summary>
-        public GhostType Gt
+        public GhostAttribute Gt
         {
             set
             {
@@ -81,7 +81,7 @@ namespace Prototype.GameInformation
         /// コンストラクタ
         /// </summary>
         /// <param name="gt"></param>
-        public Ghost(GhostType gt, Position initPos)
+        public Ghost(GhostAttribute gt, Position initPos)
         {
             Gt = gt;
             InitPos = initPos;

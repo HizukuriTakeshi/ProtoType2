@@ -88,7 +88,7 @@ namespace Prototype.GameSystem
         /// </summary>
         /// <param name="gtArray_1">1Pのゴースト初期配置</param>
         /// <param name="gtArray_2">2Pのゴースト初期配置</param>
-        public VirtualBoard(GhostType[,] gtArray_1, GhostType[,] gtArray_2)
+        public VirtualBoard(GhostAttribute[,] gtArray_1, GhostAttribute[,] gtArray_2)
         {
 
             //1Pは下側
@@ -97,15 +97,15 @@ namespace Prototype.GameSystem
                 for (int j = 0; j < gtArray_1.GetLength(1); j++)
                 {
                     //初期位置に配置
-                    if (gtArray_1[i, j] == GhostType.good)
+                    if (gtArray_1[i, j] == GhostAttribute.good)
                     {
                         //M_Board[i + 5, j + 1] = Square.P1Good;
-                        P1ghostList.Add(new Ghost(GhostType.good, new Position(i + 5, j + 1)));
+                        P1ghostList.Add(new Ghost(GhostAttribute.good, new Position(i + 5, j + 1)));
                     }
-                    else if (gtArray_1[i, j] == GhostType.evil)
+                    else if (gtArray_1[i, j] == GhostAttribute.evil)
                     {
                         //M_Board[i + 5, j + 1] = Square.P1Evil;
-                        P1ghostList.Add(new Ghost(GhostType.evil, new Position(i + 5, j + 1)));
+                        P1ghostList.Add(new Ghost(GhostAttribute.evil, new Position(i + 5, j + 1)));
 
                     }
                     else
@@ -120,16 +120,16 @@ namespace Prototype.GameSystem
             {
                 for (int j = 0; j < gtArray_2.GetLength(1); j++)
                 {
-                    if (gtArray_2[i, j] == GhostType.good)
+                    if (gtArray_2[i, j] == GhostAttribute.good)
                     {
                         //M_Board[2 - i, 4 - j] = Square.P2Good;
-                        P2ghostList.Add(new Ghost(GhostType.good, new Position(2 - i, 4 - j)));
+                        P2ghostList.Add(new Ghost(GhostAttribute.good, new Position(2 - i, 4 - j)));
 
                     }
-                    else if (gtArray_2[i, j] == GhostType.evil)
+                    else if (gtArray_2[i, j] == GhostAttribute.evil)
                     {
                         //M_Board[2 - i, 4 - j] = Square.P2Evil;
-                        P2ghostList.Add(new Ghost(GhostType.evil, new Position(2 - i, 4 - j)));
+                        P2ghostList.Add(new Ghost(GhostAttribute.evil, new Position(2 - i, 4 - j)));
                     }
                     else
                     {
@@ -186,7 +186,7 @@ namespace Prototype.GameSystem
             #endregion
         }
 
-        public int GetGhostCount(Object o, GhostType gt)
+        public int GetGhostCount(Object o, GhostAttribute gt)
         {
             int count = 0;
 
@@ -225,7 +225,7 @@ namespace Prototype.GameSystem
                     if (g.P.X == 0 && g.P.Y == 0 || g.P.X == 0 && g.P.Y == 5)
                     {
                         P1ghostList.Remove(g);
-                        if (g.Gt.Equals((GhostType.good)))
+                        if (g.Gt.Equals((GhostAttribute.good)))
                         {
                             return true;
                         }
@@ -245,7 +245,7 @@ namespace Prototype.GameSystem
                     {
                         P2ghostList.Remove(g);
 
-                        if (g.Gt.Equals((GhostType.good)))
+                        if (g.Gt.Equals((GhostAttribute.good)))
                         {
                             return true;
                         }

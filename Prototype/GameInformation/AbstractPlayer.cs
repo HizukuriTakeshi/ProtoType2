@@ -19,7 +19,7 @@ namespace Prototype.GameInformation
         /// <summary>
         /// ゴーストの初期配置
         /// </summary>
-        protected GhostType[,] initialPlacement = new GhostType[2, 4];
+        protected GhostAttribute[,] initialPlacement = new GhostAttribute[2, 4];
         #endregion
 
         #region [ アクセサ ]
@@ -52,7 +52,7 @@ namespace Prototype.GameInformation
             }
         }
 
-        public GhostType[,] InitialPlacement
+        public GhostAttribute[,] InitialPlacement
         {
             set
             {
@@ -91,7 +91,7 @@ namespace Prototype.GameInformation
         /// ゴーストの初期配置を設定するメソッド
         /// </summary>
         /// <param name="init">ゴーストの2次元配列</param>
-        public void SetInitialPlacement(GhostType[,] init)
+        public void SetInitialPlacement(GhostAttribute[,] init)
         {
             this.initialPlacement = init;
         }

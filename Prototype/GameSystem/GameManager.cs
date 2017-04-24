@@ -417,16 +417,16 @@ namespace Prototype.GameSystem
         {
             //ゲームの終了条件を確認
             //ゴースト数での終了条件
-            Console.WriteLine("good_{0} {1}", Vb.GetGhostCount(NotTurnPlayer, GhostType.good), NotTurnPlayer);
-            if (Vb.GetGhostCount(NotTurnPlayer, GhostType.good).Equals(0))
+            Console.WriteLine("good_{0} {1}", Vb.GetGhostCount(NotTurnPlayer, GhostAttribute.good), NotTurnPlayer);
+            if (Vb.GetGhostCount(NotTurnPlayer, GhostAttribute.good).Equals(0))
             {
-                Console.WriteLine("{0} {1}", NotTurnPlayer, Vb.GetGhostCount(NotTurnPlayer, GhostType.good));
+                Console.WriteLine("{0} {1}", NotTurnPlayer, Vb.GetGhostCount(NotTurnPlayer, GhostAttribute.good));
                 Console.WriteLine("{0} Win!", TurnPlayer);
                 return true;
             }
 
-            Console.WriteLine("evil_{0} {1}", Vb.GetGhostCount(NotTurnPlayer, GhostType.evil), NotTurnPlayer);
-            if (Vb.GetGhostCount(NotTurnPlayer, GhostType.evil).Equals(0))
+            Console.WriteLine("evil_{0} {1}", Vb.GetGhostCount(NotTurnPlayer, GhostAttribute.evil), NotTurnPlayer);
+            if (Vb.GetGhostCount(NotTurnPlayer, GhostAttribute.evil).Equals(0))
             {
                 Console.WriteLine("{0} Win!", NotTurnPlayer);
                 return true;

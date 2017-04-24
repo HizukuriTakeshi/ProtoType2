@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Prototype.GameInformation
-{ /// <summary>
-  /// ゴーストのタイプを表す
-  /// </summary>
+{
     enum GhostType
     {
-        good,
-        evil
-    }
+        Blank,
+        P1GhostGood,
+        P1GhostEvil,
+        P2GhostGood,
+        P2GhostEvil
+    };
+
+
 }

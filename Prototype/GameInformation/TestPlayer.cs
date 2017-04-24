@@ -9,8 +9,8 @@ namespace Prototype.GameInformation
 
         public TestPlayer() : base()
         {
-            SetInitialPlacement(new GhostType[2, 4] { { GhostType.evil, GhostType.evil, GhostType.evil, GhostType.evil },
-                                                      { GhostType.good, GhostType.good, GhostType.good, GhostType.good }}
+            SetInitialPlacement(new GhostAttribute[2, 4] { { GhostAttribute.evil, GhostAttribute.evil, GhostAttribute.evil, GhostAttribute.evil },
+                                                      { GhostAttribute.good, GhostAttribute.good, GhostAttribute.good, GhostAttribute.good }}
                                                    );
 
         }
@@ -18,8 +18,8 @@ namespace Prototype.GameInformation
         public TestPlayer(string name) : base()
         {
             this.name = name;
-            SetInitialPlacement(new GhostType[2, 4] { { GhostType.evil, GhostType.evil, GhostType.evil, GhostType.evil },
-                                                      { GhostType.good, GhostType.good, GhostType.good, GhostType.good }}
+            SetInitialPlacement(new GhostAttribute[2, 4] { { GhostAttribute.evil, GhostAttribute.evil, GhostAttribute.evil, GhostAttribute.evil },
+                                                      { GhostAttribute.good, GhostAttribute.good, GhostAttribute.good, GhostAttribute.good }}
                                                               );
         }
 
