@@ -432,8 +432,10 @@ namespace Prototype.GameSystem
                 return true;
             }
 
-            //ゴーストの位置での終了条件
-            //Vb.IsGhostAtExit(TurnPlayer);
+			//ゴーストの位置での終了条件
+			if(Vb.IsGhostAtExit(TurnPlayer)){
+				return true;
+			}
             return false;
         }
 
