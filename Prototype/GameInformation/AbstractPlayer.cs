@@ -7,11 +7,11 @@ namespace Prototype.GameInformation
 	//test
     abstract class AbstractPlayer
     {
-        #region [フィールド]
-        /// <summary>
-        /// プレイヤーの名前
-        /// </summary>
-        protected string name;
+		#region [フィールド]
+		/// <summary>
+		/// プレイヤーの名前
+		/// </summary>
+		protected string name;
         /// <summary>
         /// プレイヤーの番号
         /// </summary>
