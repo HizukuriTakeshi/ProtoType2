@@ -140,26 +140,32 @@ namespace Prototype.GameSystem
         }
 
 
-        public void MoveGhost(Move m)
+		public void MoveGhost(Move m)
         {
-            if (TurnPlayer.Equals(Object.P1))
-            {
-                //Borad変換
+			//書き換え用変数
+			Move _m = new Move(new Position(m.Pos.X, m.Pos.Y), m.GhostM);
 
-                //移動可能性
-                if (IsGhostMovable(m))
+			if (TurnPlayer.Equals(Object.P1))
+            {
+				//board変換
+				_m.Pos.X = m.Pos.X+1;
+				_m.Pos.Y = m.Pos.Y;
+
+
+				//移動可能性
+				if (IsGhostMovable(_m))
                 {
 
                     //移動(ゴーストリストのpositionを書き換える)
                     //移動先に相手のゴーストがいるときはそのゴーストをリストから消す
                     int _tmp;
-                    switch (m.GhostM)
+                    switch (_m.GhostM)
                     {
 
                         case GhostMove.Down:
                             //xとｙがm.posと同じリストの中の要素のインデックスを一つ取得する
-                            Vb.P1ghostList[Vb.GetSamePosGhostIndex(Vb.P1ghostList, m.Pos)].P = new Position(m.Pos.X + 1, m.Pos.Y);
-                            _tmp = Vb.GetSamePosGhostIndex(Vb.P2ghostList, new Position(m.Pos.X + 1, m.Pos.Y));
+                            Vb.P1ghostList[Vb.GetSamePosGhostIndex(Vb.P1ghostList, _m.Pos)].P = new Position(_m.Pos.X + 1, _m.Pos.Y);
+                            _tmp = Vb.GetSamePosGhostIndex(Vb.P2ghostList, new Position(_m.Pos.X + 1, _m.Pos.Y));
                             if (_tmp >= 0)
                             {
                                 Vb.P2ghostList.RemoveAt(_tmp);
@@ -168,8 +174,8 @@ namespace Prototype.GameSystem
                             break;
 
                         case GhostMove.Left:
-                            Vb.P1ghostList[Vb.GetSamePosGhostIndex(Vb.P1ghostList, m.Pos)].P = new Position(m.Pos.X, m.Pos.Y - 1);
-                            _tmp = Vb.GetSamePosGhostIndex(Vb.P2ghostList, new Position(m.Pos.X, m.Pos.Y - 1));
+                            Vb.P1ghostList[Vb.GetSamePosGhostIndex(Vb.P1ghostList, _m.Pos)].P = new Position(_m.Pos.X, _m.Pos.Y - 1);
+                            _tmp = Vb.GetSamePosGhostIndex(Vb.P2ghostList, new Position(_m.Pos.X, _m.Pos.Y - 1));
                             if (_tmp >= 0)
                             {
                                 Vb.P2ghostList.RemoveAt(_tmp);
@@ -178,8 +184,8 @@ namespace Prototype.GameSystem
                             break;
 
                         case GhostMove.Right:
-                            Vb.P1ghostList[Vb.GetSamePosGhostIndex(Vb.P1ghostList, m.Pos)].P = new Position(m.Pos.X, m.Pos.Y + 1);
-                            _tmp = Vb.GetSamePosGhostIndex(Vb.P2ghostList, new Position(m.Pos.X, m.Pos.Y + 1));
+                            Vb.P1ghostList[Vb.GetSamePosGhostIndex(Vb.P1ghostList, _m.Pos)].P = new Position(_m.Pos.X, _m.Pos.Y + 1);
+                            _tmp = Vb.GetSamePosGhostIndex(Vb.P2ghostList, new Position(_m.Pos.X, _m.Pos.Y + 1));
                             if (_tmp >= 0)
                             {
                                 Vb.P2ghostList.RemoveAt(_tmp);
@@ -187,8 +193,8 @@ namespace Prototype.GameSystem
                             //Vb.M_Board[m.Pos.X, m.Pos.Y + 1] = Vb.M_Board[m.Pos.X, m.Pos.Y];
                             break;
                         case GhostMove.Up:
-                            Vb.P1ghostList[Vb.GetSamePosGhostIndex(Vb.P1ghostList, m.Pos)].P = new Position(m.Pos.X - 1, m.Pos.Y);
-                            _tmp = Vb.GetSamePosGhostIndex(Vb.P2ghostList, new Position(m.Pos.X - 1, m.Pos.Y));
+                            Vb.P1ghostList[Vb.GetSamePosGhostIndex(Vb.P1ghostList, _m.Pos)].P = new Position(_m.Pos.X - 1, _m.Pos.Y);
+                            _tmp = Vb.GetSamePosGhostIndex(Vb.P2ghostList, new Position(_m.Pos.X - 1, _m.Pos.Y));
                             if (_tmp >= 0)
                             {
                                 Vb.P2ghostList.RemoveAt(_tmp);
@@ -204,22 +210,24 @@ namespace Prototype.GameSystem
             }
             else
             {
-                //Borad変換
+				//Borad変換
+				_m.Pos.X = m.Pos.X + 1;
+				_m.Pos.Y = m.Pos.Y;
 
                 //移動可能性
-                if (IsGhostMovable(m))
+                if (IsGhostMovable(_m))
                 {
 
                     //移動(ゴーストリストのpositionを書き換える)
                     //移動先に相手のゴーストがいるときはそのゴーストをリストから消す
                     int _tmp;
-                    switch (m.GhostM)
+                    switch (_m.GhostM)
                     {
 
                         case GhostMove.Down:
                             //xとｙがm.posと同じリストの中の要素のインデックスを一つ取得する
-                            Vb.P2ghostList[Vb.GetSamePosGhostIndex(Vb.P2ghostList, m.Pos)].P = new Position(m.Pos.X + 1, m.Pos.Y);
-                            _tmp = Vb.GetSamePosGhostIndex(Vb.P1ghostList, new Position(m.Pos.X + 1, m.Pos.Y));
+                            Vb.P2ghostList[Vb.GetSamePosGhostIndex(Vb.P2ghostList, _m.Pos)].P = new Position(_m.Pos.X + 1, _m.Pos.Y);
+                            _tmp = Vb.GetSamePosGhostIndex(Vb.P1ghostList, new Position(_m.Pos.X + 1, _m.Pos.Y));
                             if (_tmp >= 0)
                             {
                                 Vb.P1ghostList.RemoveAt(_tmp);
@@ -229,8 +237,8 @@ namespace Prototype.GameSystem
                             break;
 
                         case GhostMove.Left:
-                            Vb.P2ghostList[Vb.GetSamePosGhostIndex(Vb.P2ghostList, m.Pos)].P = new Position(m.Pos.X, m.Pos.Y - 1);
-                            _tmp = Vb.GetSamePosGhostIndex(Vb.P1ghostList, new Position(m.Pos.X, m.Pos.Y - 1));
+                            Vb.P2ghostList[Vb.GetSamePosGhostIndex(Vb.P2ghostList, _m.Pos)].P = new Position(_m.Pos.X, _m.Pos.Y - 1);
+                            _tmp = Vb.GetSamePosGhostIndex(Vb.P1ghostList, new Position(_m.Pos.X, _m.Pos.Y - 1));
                             if (_tmp >= 0)
                             {
                                 Vb.P1ghostList.RemoveAt(_tmp);
@@ -239,8 +247,8 @@ namespace Prototype.GameSystem
                             break;
 
                         case GhostMove.Right:
-                            Vb.P2ghostList[Vb.GetSamePosGhostIndex(Vb.P2ghostList, m.Pos)].P = new Position(m.Pos.X, m.Pos.Y + 1);
-                            _tmp = Vb.GetSamePosGhostIndex(Vb.P1ghostList, new Position(m.Pos.X, m.Pos.Y + 1));
+                            Vb.P2ghostList[Vb.GetSamePosGhostIndex(Vb.P2ghostList, _m.Pos)].P = new Position(_m.Pos.X, _m.Pos.Y + 1);
+                            _tmp = Vb.GetSamePosGhostIndex(Vb.P1ghostList, new Position(_m.Pos.X, _m.Pos.Y + 1));
                             if (_tmp >= 0)
                             {
                                 Vb.P1ghostList.RemoveAt(_tmp);
@@ -248,8 +256,8 @@ namespace Prototype.GameSystem
                             //Vb.M_Board[m.Pos.X, m.Pos.Y + 1] = Vb.M_Board[m.Pos.X, m.Pos.Y];
                             break;
                         case GhostMove.Up:
-                            Vb.P2ghostList[Vb.GetSamePosGhostIndex(Vb.P2ghostList, m.Pos)].P = new Position(m.Pos.X - 1, m.Pos.Y);
-                            _tmp = Vb.GetSamePosGhostIndex(Vb.P1ghostList, new Position(m.Pos.X - 1, m.Pos.Y));
+                            Vb.P2ghostList[Vb.GetSamePosGhostIndex(Vb.P2ghostList, _m.Pos)].P = new Position(_m.Pos.X - 1, _m.Pos.Y);
+                            _tmp = Vb.GetSamePosGhostIndex(Vb.P1ghostList, new Position(_m.Pos.X - 1, _m.Pos.Y));
                             if (_tmp >= 0)
                             {
                                 Vb.P1ghostList.RemoveAt(_tmp);

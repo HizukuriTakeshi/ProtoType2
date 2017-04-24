@@ -214,7 +214,7 @@ namespace Prototype.GameSystem
 					}
 					else if (g.Gt.Equals(GhostAttribute.good))
 					{
-						Board[x, y] = GhostType.P2GhostEvil;
+						Board[x, y] = GhostType.P2GhostGood;
 					}
 					else
 					{
