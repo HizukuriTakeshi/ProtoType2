@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Text;
 using Prototype.GameInformation;
 using Prototype.GameSystem;
+using System.Diagnostics;
+using System.Threading;
 
 namespace Prototype.GameSystem
 {
     class GameManager
     {
+
+		private List<AbstractPlayer> playerList = new List<AbstractPlayer>();
+
         #region [フィールド]
-        public VirtualBoard Vb
+		public GameState gamestate
         {
             get;
             set;
@@ -87,6 +92,7 @@ namespace Prototype.GameSystem
             set;
         }
 
+
         #endregion
 
 
@@ -103,6 +109,9 @@ namespace Prototype.GameSystem
             P1.PlayerNumber = 1;
             P2.PlayerNumber = -1;
 
+			playerList.Add(p1);
+			playerList.Add(p2);
+
             Evil = Square.P1Evil;
             Good = Square.P1Good;
 
@@ -112,12 +121,232 @@ namespace Prototype.GameSystem
             P2_EvilGhostNum = 4;
             P2_GoodGhostNum = 4;
 
-            Vb = new VirtualBoard(P1.InitialPlacement, P2.InitialPlacement);
+            gamestate = new GameState(P1.InitialPlacement, P2.InitialPlacement);
         }
-        #endregion
+		#endregion
 
-        #region [メソッド]
-        public void NextTurn()
+		#region [メソッド]
+
+
+		public void SetGhostPostionInVirtual()
+		{
+			foreach (Ghost g in gamestate.P1ghostList)
+			{
+				gamestate.M_Board[g.P.X, g.P.Y] = Object.P1;
+			}
+
+			foreach (Ghost g in gamestate.P2ghostList)
+			{
+				gamestate.M_Board[g.P.X, g.P.Y] = Object.P2;
+			}
+		}
+
+		public void SetGhostPositionInBoard()
+		{
+			//P1リスト
+			foreach (Ghost g in gamestate.P1ghostList)
+			{
+				//vb->b変換
+				int x = g.P.X - 1;
+				int y = g.P.Y;
+
+				//例外処理
+				if (x < 0 || y < 0 || x > 6 || y > 6)
+				{
+
+				}
+				else
+				{
+					if (g.Gt.Equals(GhostAttribute.evil))
+					{
+						gamestate.Board[x, y] = GhostType.P1GhostEvil;
+					}
+					else if (g.Gt.Equals(GhostAttribute.good))
+					{
+						gamestate.Board[x, y] = GhostType.P1GhostGood;
+					}
+					else
+					{
+						gamestate.Board[x, y] = GhostType.Blank;
+					}
+
+				}
+			}
+
+			foreach (Ghost g in gamestate.P2ghostList)
+			{
+				//vb->b変換
+				int x = g.P.X - 1;
+				int y = g.P.Y;
+
+				//例外処理
+				if (x < 0 || y < 0 || x > 6 || y > 6)
+				{
+
+				}
+				else
+				{
+					if (g.Gt.Equals(GhostAttribute.evil))
+					{
+						gamestate.Board[x, y] = GhostType.P2GhostEvil;
+					}
+					else if (g.Gt.Equals(GhostAttribute.good))
+					{
+						gamestate.Board[x, y] = GhostType.P2GhostGood;
+					}
+					else
+					{
+						gamestate.Board[x, y] = GhostType.Blank;
+					}
+
+				}
+			}
+
+		}
+
+
+
+		public void ResetGhostPostion()
+		{
+			for (int i = 0; i < gamestate.M_Board.GetLength(0); i++)
+			{
+				for (int j = 0; j < gamestate.M_Board.GetLength(1); j++)
+				{
+					gamestate.M_Board[i, j] = Object.blank;
+				}
+			}
+		}
+
+		public void ResetGhostPositionInBoard()
+		{
+			for (int i = 0; i < gamestate.Board.GetLength(0); i++)
+			{
+				for (int j = 0; j < gamestate.Board.GetLength(1); j++)
+				{
+					gamestate.Board[i, j] = GhostType.Blank;
+				}
+			}
+
+		}
+
+
+		public int GetSamePosGhostIndex(List<Ghost> glist, Position p)
+		{
+			int index = -1;
+			foreach (Ghost g in glist)
+			{
+				if (g.P.X == p.X && g.P.Y == p.Y)
+				{
+					index = glist.IndexOf(g);
+					break;
+				}
+			}
+			return index;
+
+			#endregion
+		}
+
+		public int GetGhostCount(Object o, GhostAttribute gt)
+		{
+			int count = 0;
+
+			if (o.Equals(Object.P1))
+			{
+				foreach (Ghost g in gamestate.P1ghostList)
+				{
+					if (g.Gt.Equals(gt))
+					{
+						count++;
+					}
+				}
+			}
+			else if (o.Equals(Object.P2))
+			{
+				foreach (Ghost g in gamestate.P2ghostList)
+				{
+					if (g.Gt.Equals(gt))
+					{
+						count++;
+					}
+				}
+			}
+
+			return count;
+		}
+
+		public Boolean IsGhostAtExit(Object o)
+		{
+			//Ghostlistを検索し出口にいないかチェック
+			if (o.Equals(Object.P1))
+			{
+				Debug.WriteLine("P1");
+				foreach (Ghost g in gamestate.P1ghostList)
+				{
+					Debug.WriteLine("roop");
+					if (g.P.X == 0 && g.P.Y == 0 || g.P.X == 0 && g.P.Y == 5)
+					{
+						Debug.WriteLine("0005");
+						gamestate.P1ghostList.Remove(g);
+						if (g.Gt.Equals((GhostAttribute.good)))
+						{
+							return true;
+						}
+						else
+						{
+							break;
+						}
+
+					}
+				}
+			}
+			else if (o.Equals(Object.P2))
+			{
+				foreach (Ghost g in gamestate.P2ghostList)
+				{
+					if (g.P.X == 7 && g.P.Y == 0 || g.P.X == 7 && g.P.Y == 5)
+					{
+						gamestate.P2ghostList.Remove(g);
+
+						if (g.Gt.Equals((GhostAttribute.good)))
+						{
+							return true;
+						}
+						else
+						{
+							break;
+						}
+					}
+
+				}
+
+			}
+
+			return false;
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		public void NextTurn()
         {
 
             if ((Turn % 2).Equals(1))
@@ -164,40 +393,40 @@ namespace Prototype.GameSystem
 
                         case GhostMove.Down:
                             //xとｙがm.posと同じリストの中の要素のインデックスを一つ取得する
-                            Vb.P1ghostList[Vb.GetSamePosGhostIndex(Vb.P1ghostList, _m.Pos)].P = new Position(_m.Pos.X + 1, _m.Pos.Y);
-                            _tmp = Vb.GetSamePosGhostIndex(Vb.P2ghostList, new Position(_m.Pos.X + 1, _m.Pos.Y));
+                            gamestate.P1ghostList[gamestate.GetSamePosGhostIndex(gamestate.P1ghostList, _m.Pos)].P = new Position(_m.Pos.X + 1, _m.Pos.Y);
+                            _tmp = gamestate.GetSamePosGhostIndex(gamestate.P2ghostList, new Position(_m.Pos.X + 1, _m.Pos.Y));
                             if (_tmp >= 0)
                             {
-                                Vb.P2ghostList.RemoveAt(_tmp);
+                                gamestate.P2ghostList.RemoveAt(_tmp);
                             }
                             //Vb.M_Board[m.Pos.X + 1, m.Pos.Y] = Vb.M_Board[m.Pos.X, m.Pos.Y];
                             break;
 
                         case GhostMove.Left:
-                            Vb.P1ghostList[Vb.GetSamePosGhostIndex(Vb.P1ghostList, _m.Pos)].P = new Position(_m.Pos.X, _m.Pos.Y - 1);
-                            _tmp = Vb.GetSamePosGhostIndex(Vb.P2ghostList, new Position(_m.Pos.X, _m.Pos.Y - 1));
+                            gamestate.P1ghostList[gamestate.GetSamePosGhostIndex(gamestate.P1ghostList, _m.Pos)].P = new Position(_m.Pos.X, _m.Pos.Y - 1);
+                            _tmp = gamestate.GetSamePosGhostIndex(gamestate.P2ghostList, new Position(_m.Pos.X, _m.Pos.Y - 1));
                             if (_tmp >= 0)
                             {
-                                Vb.P2ghostList.RemoveAt(_tmp);
+                                gamestate.P2ghostList.RemoveAt(_tmp);
                             }
                             //Vb.M_Board[m.Pos.X, m.Pos.Y - 1] = Vb.M_Board[m.Pos.X, m.Pos.Y];
                             break;
 
                         case GhostMove.Right:
-                            Vb.P1ghostList[Vb.GetSamePosGhostIndex(Vb.P1ghostList, _m.Pos)].P = new Position(_m.Pos.X, _m.Pos.Y + 1);
-                            _tmp = Vb.GetSamePosGhostIndex(Vb.P2ghostList, new Position(_m.Pos.X, _m.Pos.Y + 1));
+                            gamestate.P1ghostList[gamestate.GetSamePosGhostIndex(gamestate.P1ghostList, _m.Pos)].P = new Position(_m.Pos.X, _m.Pos.Y + 1);
+                            _tmp = gamestate.GetSamePosGhostIndex(gamestate.P2ghostList, new Position(_m.Pos.X, _m.Pos.Y + 1));
                             if (_tmp >= 0)
                             {
-                                Vb.P2ghostList.RemoveAt(_tmp);
+                                gamestate.P2ghostList.RemoveAt(_tmp);
                             }
                             //Vb.M_Board[m.Pos.X, m.Pos.Y + 1] = Vb.M_Board[m.Pos.X, m.Pos.Y];
                             break;
                         case GhostMove.Up:
-                            Vb.P1ghostList[Vb.GetSamePosGhostIndex(Vb.P1ghostList, _m.Pos)].P = new Position(_m.Pos.X - 1, _m.Pos.Y);
-                            _tmp = Vb.GetSamePosGhostIndex(Vb.P2ghostList, new Position(_m.Pos.X - 1, _m.Pos.Y));
+                            gamestate.P1ghostList[gamestate.GetSamePosGhostIndex(gamestate.P1ghostList, _m.Pos)].P = new Position(_m.Pos.X - 1, _m.Pos.Y);
+                            _tmp = gamestate.GetSamePosGhostIndex(gamestate.P2ghostList, new Position(_m.Pos.X - 1, _m.Pos.Y));
                             if (_tmp >= 0)
                             {
-                                Vb.P2ghostList.RemoveAt(_tmp);
+                                gamestate.P2ghostList.RemoveAt(_tmp);
                             }
                             //Vb.M_Board[m.Pos.X - 1, m.Pos.Y] = Vb.M_Board[m.Pos.X, m.Pos.Y];
                             break;
@@ -226,41 +455,41 @@ namespace Prototype.GameSystem
 
                         case GhostMove.Down:
                             //xとｙがm.posと同じリストの中の要素のインデックスを一つ取得する
-                            Vb.P2ghostList[Vb.GetSamePosGhostIndex(Vb.P2ghostList, _m.Pos)].P = new Position(_m.Pos.X + 1, _m.Pos.Y);
-                            _tmp = Vb.GetSamePosGhostIndex(Vb.P1ghostList, new Position(_m.Pos.X + 1, _m.Pos.Y));
+                            gamestate.P2ghostList[gamestate.GetSamePosGhostIndex(gamestate.P2ghostList, _m.Pos)].P = new Position(_m.Pos.X + 1, _m.Pos.Y);
+                            _tmp = gamestate.GetSamePosGhostIndex(gamestate.P1ghostList, new Position(_m.Pos.X + 1, _m.Pos.Y));
                             if (_tmp >= 0)
                             {
-                                Vb.P1ghostList.RemoveAt(_tmp);
+                                gamestate.P1ghostList.RemoveAt(_tmp);
 
                             }
                             //Vb.M_Board[m.Pos.X + 1, m.Pos.Y] = Vb.M_Board[m.Pos.X, m.Pos.Y];
                             break;
 
                         case GhostMove.Left:
-                            Vb.P2ghostList[Vb.GetSamePosGhostIndex(Vb.P2ghostList, _m.Pos)].P = new Position(_m.Pos.X, _m.Pos.Y - 1);
-                            _tmp = Vb.GetSamePosGhostIndex(Vb.P1ghostList, new Position(_m.Pos.X, _m.Pos.Y - 1));
+                            gamestate.P2ghostList[gamestate.GetSamePosGhostIndex(gamestate.P2ghostList, _m.Pos)].P = new Position(_m.Pos.X, _m.Pos.Y - 1);
+                            _tmp = gamestate.GetSamePosGhostIndex(gamestate.P1ghostList, new Position(_m.Pos.X, _m.Pos.Y - 1));
                             if (_tmp >= 0)
                             {
-                                Vb.P1ghostList.RemoveAt(_tmp);
+                                gamestate.P1ghostList.RemoveAt(_tmp);
                             }
                             //Vb.M_Board[m.Pos.X, m.Pos.Y - 1] = Vb.M_Board[m.Pos.X, m.Pos.Y];
                             break;
 
                         case GhostMove.Right:
-                            Vb.P2ghostList[Vb.GetSamePosGhostIndex(Vb.P2ghostList, _m.Pos)].P = new Position(_m.Pos.X, _m.Pos.Y + 1);
-                            _tmp = Vb.GetSamePosGhostIndex(Vb.P1ghostList, new Position(_m.Pos.X, _m.Pos.Y + 1));
+                            gamestate.P2ghostList[gamestate.GetSamePosGhostIndex(gamestate.P2ghostList, _m.Pos)].P = new Position(_m.Pos.X, _m.Pos.Y + 1);
+                            _tmp = gamestate.GetSamePosGhostIndex(gamestate.P1ghostList, new Position(_m.Pos.X, _m.Pos.Y + 1));
                             if (_tmp >= 0)
                             {
-                                Vb.P1ghostList.RemoveAt(_tmp);
+                                gamestate.P1ghostList.RemoveAt(_tmp);
                             }
                             //Vb.M_Board[m.Pos.X, m.Pos.Y + 1] = Vb.M_Board[m.Pos.X, m.Pos.Y];
                             break;
                         case GhostMove.Up:
-                            Vb.P2ghostList[Vb.GetSamePosGhostIndex(Vb.P2ghostList, _m.Pos)].P = new Position(_m.Pos.X - 1, _m.Pos.Y);
-                            _tmp = Vb.GetSamePosGhostIndex(Vb.P1ghostList, new Position(_m.Pos.X - 1, _m.Pos.Y));
+                            gamestate.P2ghostList[gamestate.GetSamePosGhostIndex(gamestate.P2ghostList, _m.Pos)].P = new Position(_m.Pos.X - 1, _m.Pos.Y);
+                            _tmp = gamestate.GetSamePosGhostIndex(gamestate.P1ghostList, new Position(_m.Pos.X - 1, _m.Pos.Y));
                             if (_tmp >= 0)
                             {
-                                Vb.P1ghostList.RemoveAt(_tmp);
+                                gamestate.P1ghostList.RemoveAt(_tmp);
                             }
                             //Vb.M_Board[m.Pos.X - 1, m.Pos.Y] = Vb.M_Board[m.Pos.X, m.Pos.Y];
                             break;
@@ -271,10 +500,10 @@ namespace Prototype.GameSystem
                 }
             }
 
-            Vb.ResetGhostPostion();
-			Vb.ResetGhostPositionInBoard();
-            Vb.SetGhostPostionInVirtual();
-			Vb.SetGhostPositionInBoard();
+            gamestate.ResetGhostPostion();
+			gamestate.ResetGhostPositionInBoard();
+            gamestate.SetGhostPostionInVirtual();
+			gamestate.SetGhostPositionInBoard();
 
         }
 
@@ -297,6 +526,7 @@ namespace Prototype.GameSystem
                         //移動先に自分のゴーストがいないか
                         if (!GhostExists(new Position(m.Pos.X + 1, m.Pos.Y)))
                         {
+							Console.WriteLine("Can move");
                             return true;
                         }
                     }
@@ -312,7 +542,7 @@ namespace Prototype.GameSystem
                         //移動先に自分のゴーストがいないか
                         if (!GhostExists(new Position(m.Pos.X, m.Pos.Y - 1)))
                         {
-                            Console.WriteLine("here");
+                            Console.WriteLine("Can move");
                             return true;
                         }
                     }
@@ -328,6 +558,7 @@ namespace Prototype.GameSystem
                         //移動先に自分のゴーストがいないか
                         if (!GhostExists(new Position(m.Pos.X, m.Pos.Y + 1)))
                         {
+							Console.WriteLine("Can move");
                             return true;
                         }
                     }
@@ -343,6 +574,7 @@ namespace Prototype.GameSystem
                         //移動先に自分のゴーストがいないか
                         if (!GhostExists(new Position(m.Pos.X - 1, m.Pos.Y)))
                         {
+							Console.WriteLine("Can move");
                             return true;
                         }
                     }
@@ -366,12 +598,12 @@ namespace Prototype.GameSystem
             if (GhostIsInBoard(p))
             {
                 //位置pにゴーストが存在するか判定
-                if (Vb.M_Board[p.X, p.Y].Equals(TurnPlayer))
+                if (gamestate.M_Board[p.X, p.Y].Equals(TurnPlayer))
                 {
                     return true;
                 }
             }
-            Console.WriteLine("Ghost not exist:{0} {1}", p.X, p.Y);
+            Debug.WriteLine("Ghost not exist:{0} {1}", p.X, p.Y);
             return false;
         }
 
@@ -410,7 +642,7 @@ namespace Prototype.GameSystem
 
             }
 
-            Console.WriteLine("out of Board:{0} {1}", p.X, p.Y);
+            Debug.WriteLine("out of Board:{0} {1}", p.X, p.Y);
             return false;
         }
         public Boolean IsExit(Position p)
@@ -425,26 +657,29 @@ namespace Prototype.GameSystem
 
         public Boolean VorDCheck()
         {
+
             //ゲームの終了条件を確認
             //ゴースト数での終了条件
-            Console.WriteLine("good_{0} {1}", Vb.GetGhostCount(NotTurnPlayer, GhostAttribute.good), NotTurnPlayer);
-            if (Vb.GetGhostCount(NotTurnPlayer, GhostAttribute.good).Equals(0))
+            Console.WriteLine("good_{0} {1}", gamestate.GetGhostCount(NotTurnPlayer, GhostAttribute.good), NotTurnPlayer);
+            if (gamestate.GetGhostCount(NotTurnPlayer, GhostAttribute.good).Equals(0))
             {
-                Console.WriteLine("{0} {1}", NotTurnPlayer, Vb.GetGhostCount(NotTurnPlayer, GhostAttribute.good));
+                Console.WriteLine("{0} {1}", NotTurnPlayer, gamestate.GetGhostCount(NotTurnPlayer, GhostAttribute.good));
                 Console.WriteLine("{0} Win!", TurnPlayer);
                 return true;
             }
 
-            Console.WriteLine("evil_{0} {1}", Vb.GetGhostCount(NotTurnPlayer, GhostAttribute.evil), NotTurnPlayer);
-            if (Vb.GetGhostCount(NotTurnPlayer, GhostAttribute.evil).Equals(0))
+            Console.WriteLine("evil_{0} {1}", gamestate.GetGhostCount(NotTurnPlayer, GhostAttribute.evil), NotTurnPlayer);
+            if (gamestate.GetGhostCount(NotTurnPlayer, GhostAttribute.evil).Equals(0))
             {
                 Console.WriteLine("{0} Win!", NotTurnPlayer);
                 return true;
             }
 
-            //ゴーストの位置での終了条件
-            if (Vb.IsGhostAtExit(TurnPlayer))
+			//ゴーストの位置での終了条件
+
+            if (gamestate.IsGhostAtExit(TurnPlayer))
             {
+Console.WriteLine("{0} Win!", TurnPlayer);
                 return true;
             }
             return false;
@@ -456,17 +691,17 @@ namespace Prototype.GameSystem
         /// </summary>
         public void DisplayVirtualBoard()
         {
-            for (int i = 0; i < Vb.M_Board.GetLength(1); i++)
+            for (int i = 0; i < gamestate.M_Board.GetLength(1); i++)
             {
                 Console.Write("{0,11} ", i);
             }
             Console.WriteLine();
-            for (int i = 0; i < Vb.M_Board.GetLength(0); i++)
+            for (int i = 0; i < gamestate.M_Board.GetLength(0); i++)
             {
                 Console.Write("{0} ", i);
-                for (int j = 0; j < Vb.M_Board.GetLength(1); j++)
+                for (int j = 0; j < gamestate.M_Board.GetLength(1); j++)
                 {
-                    Console.Write("{0,11} ", Vb.M_Board[i, j]);
+                    Console.Write("{0,11} ", gamestate.M_Board[i, j]);
                 }
                 Console.WriteLine();
             }
@@ -474,26 +709,115 @@ namespace Prototype.GameSystem
 
 		public void DisplayBoard()
 		{
-			for (int i = 0; i < Vb.Board.GetLength(1); i++)
+			for (int i = 0; i < gamestate.Board.GetLength(1); i++)
 			{
 				Console.Write("{0,11} ", i);
 			}
 			Console.WriteLine();
-			for (int i = 0; i < Vb.Board.GetLength(0); i++)
+			for (int i = 0; i < gamestate.Board.GetLength(0); i++)
 			{
 				Console.Write("{0} ", i);
-				for (int j = 0; j < Vb.Board.GetLength(1); j++)
+				for (int j = 0; j < gamestate.Board.GetLength(1); j++)
 				{
-					Console.Write("{0,11} ", Vb.Board[i, j]);
+					Console.Write("{0,11} ", gamestate.Board[i, j]);
 				}
 				Console.WriteLine();
 			}
 		}
 
+
+
+		public void ProcessGame(){
+			DisplayVirtualBoard();
+			DisplayBoard();
+			for (int i = 0; i < FinalTurn; i++)
+			{
+				gamestate.CurrentPlayer = Object.P1;
+				GetPlayerMove();
+				//MovePlayer()に変える
+				//gamestateを更新
+				DisplayVirtualBoard();
+				DisplayBoard();
+				if (VorDCheck())
+				{
+					break;
+				}
+				NextTurn();
+			}
+
+		}
+
+		/// <summary>
+		/// Gets the player move.
+		/// GamestateにplayerMoveを代入する
+		/// </summary>
+		private void GetPlayerMove()
+		{
+			
+			//gameState.CurrentPlayerMove = playerList[gameState.CurrentPlayer].GetMove();
+			//tmpMove->gamestate.currentGameplayerMoveを引数に
+			//ただし，tempMoveはAbstractplayerのmoveに変換する
+			//processGameにはMovePlayer()を記述
+			//
+			MoveGhost(TmpMove());
+			}
+
+		//private void MovePlayer()
+		//{
+
+		//	Thread thread = null;
+		//	Boolean isThreadRunning = false;
+		//	Boolean isThreadTimeOut;
+
+		//	TimeSpan timeSpan;
+		//	DateTime endTime;
+		//	DateTime startTime = DateTime.Now;
+
+		//	while (true)
+		//	{
+		//		if (!isThreadRunning)
+		//		{
+		//			thread = new Thread(new ThreadStart(GetPlayerMove));
+		//			thread.Start();
+		//			isThreadRunning = true;
+		//		}
+		//		else
+		//		{
+		//			endTime = DateTime.Now;
+		//			timeSpan = endTime - startTime;
+		//			if (timeSpan.TotalMilliseconds > gameState.ThinkTime)
+		//			{
+		//				thread.Abort();
+		//				isThreadTimeOut = true;
+
+		//				break;
+		//			}
+		//			if (!thread.IsAlive)
+		//			{
+		//				isThreadTimeOut = false;
+		//				break;
+		//			}
+		//		}
+		//	}
+
+		//	if (!isThreadTimeOut)
+		//	{
+		//		JudgeMove();
+		//		if (timeSpan.TotalMilliseconds + processFPS < gameState.ThinkTime)
+		//			Thread.Sleep(processFPS);
+		//	}
+
+		//	else
+		//	{
+		//		Debug.WriteLine("Time OVER");
+		//	}
+		//}
+
+
         /// <summary>
         /// テスト用Move入力関数(コンソールから)
         /// </summary>
-        public Move tmpMove()
+        public Move TmpMove()
         {
             GhostMove gm = new GhostMove();
 
@@ -529,7 +853,7 @@ namespace Prototype.GameSystem
 
             return new Move(new Position(x, y), gm);
         }
-        #endregion
+
 
 
     }

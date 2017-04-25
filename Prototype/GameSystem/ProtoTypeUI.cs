@@ -18,19 +18,7 @@ namespace Prototype.GameSystem
         #region [コンストラタ]
         public ProtoTypeUI(GameManager gameManager)
         {
-            gameManager.DisplayVirtualBoard();
-			gameManager.DisplayBoard();
-            for (int i = 0; i < gameManager.FinalTurn; i++)
-            {
-                gameManager.MoveGhost(gameManager.tmpMove());
-                gameManager.DisplayVirtualBoard();
-				gameManager.DisplayBoard();
-                if (gameManager.VorDCheck())
-                {
-                    break;
-                }
-                gameManager.NextTurn();
-            }
+            gameManager.ProcessGame();
             Console.ReadLine();
         }
 

@@ -20,6 +20,8 @@ namespace Prototype.GameInformation
         /// ゴーストの初期配置
         /// </summary>
         protected GhostAttribute[,] initialPlacement = new GhostAttribute[2, 4];
+
+
         #endregion
 
         #region [ アクセサ ]

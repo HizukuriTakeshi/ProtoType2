@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 using Prototype.GameInformation;
+using System.Diagnostics;
 
 namespace Prototype.GameSystem
 {
     /// <summary>
     /// 処理のための拡張した盤面を表すクラス
     /// </summary>
-    class VirtualBoard
+    class GameState
     {
         #region  [パブリック変数]
         /// <summary>
@@ -19,33 +20,20 @@ namespace Prototype.GameSystem
         /// 仮
         /// </summary>
         private Object[,] m_Board = new Object[8, 6];
+	private GhostType[,] board = new GhostType[6, 6];
 
-		private GhostType[,] board = new GhostType[6, 6];
 
         private List<Ghost> p1GhostList = new List<Ghost>();
         private List<Ghost> p2GhostList = new List<Ghost>();
 
+		protected Move currentPlayerMove=null;
+		public Object currentPlayer= Object.blank;
 
         #endregion
 
 
         #region [アクセサ]
-        /// <summary>
-        /// Objectのアクセサ
-        /// </summary>
-        //public Square[,] M_Board
-        //{
-        //    set
-        //    {
-        //        this.m_Boad = value;
-        //    }
-
-        //    get
-        //    {
-        //        return this.m_Boad;
-        //    }
-        //}
-
+        
         public Object[,] M_Board
         {
             set
@@ -92,6 +80,18 @@ namespace Prototype.GameSystem
                 p2GhostList = value;
             }
         }
+
+		public Move CurrePlayerntMove
+		{
+			get { return this.currentPlayerMove; }
+		}
+
+		public Object CurrentPlayer
+		{
+			get { return this.currentPlayer; }
+			set { this.currentPlayer = value; }
+
+		}
         #endregion
 
         #region [コンストラクタ]
@@ -100,7 +100,7 @@ namespace Prototype.GameSystem
         /// </summary>
         /// <param name="gtArray_1">1Pのゴースト初期配置</param>
         /// <param name="gtArray_2">2Pのゴースト初期配置</param>
-        public VirtualBoard(GhostAttribute[,] gtArray_1, GhostAttribute[,] gtArray_2)
+        public GameState(GhostAttribute[,] gtArray_1, GhostAttribute[,] gtArray_2)
         {
 
             //1Pは下側
@@ -181,7 +181,7 @@ namespace Prototype.GameSystem
 				int y = g.P.Y;
 
 				//例外処理
-				if(x<0 || y <0 || x > 6 || y > 6){
+				if(x<0 || y <0 || x > 5 || y > 5){
 					
 				}else{
 					if(g.Gt.Equals(GhostAttribute.evil)){
@@ -202,9 +202,9 @@ namespace Prototype.GameSystem
 				int y = g.P.Y;
 
 				//例外処理
-				if (x < 0 || y < 0 || x > 6 || y > 6)
+				if (x < 0 || y < 0 || x > 5 || y > 5)
 				{
-
+					Debug.WriteLine("out of Board");
 				}
 				else
 				{
@@ -214,6 +214,7 @@ namespace Prototype.GameSystem
 					}
 					else if (g.Gt.Equals(GhostAttribute.good))
 					{
+
 						Board[x, y] = GhostType.P2GhostGood;
 					}
 					else
