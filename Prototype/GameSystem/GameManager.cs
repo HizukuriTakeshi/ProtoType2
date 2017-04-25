@@ -733,16 +733,34 @@ Console.WriteLine("{0} Win!", TurnPlayer);
 			for (int i = 0; i < FinalTurn; i++)
 			{
 				gamestate.CurrentPlayer = Object.P1;
-				GetPlayerMove();
 				//MovePlayer()に変える
+				GetPlayerMove();
 				//gamestateを更新
-				DisplayVirtualBoard();
-				DisplayBoard();
+				P1.SetGameState(gamestate);
+				GetPlayerMove();
 				if (VorDCheck())
 				{
 					break;
 				}
+				DisplayVirtualBoard();
+				DisplayBoard();
 				NextTurn();
+
+				gamestate.CurrentPlayer = Object.P2;
+				//MovePlayer()に変える
+				GetPlayerMove();
+				//gamestateを更新
+				P2.SetGameState(gamestate);
+				GetPlayerMove();
+				if (VorDCheck())
+				{
+					break;
+				}
+				DisplayVirtualBoard();
+				DisplayBoard();
+				NextTurn();
+
+
 			}
 
 		}

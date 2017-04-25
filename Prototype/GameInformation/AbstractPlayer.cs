@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Prototype.GameSystem;
 
 namespace Prototype.GameInformation
 {
@@ -21,6 +22,7 @@ namespace Prototype.GameInformation
         /// </summary>
         protected GhostAttribute[,] initialPlacement = new GhostAttribute[2, 4];
 
+	private	GameState gameState;
 
         #endregion
 
@@ -86,9 +88,16 @@ namespace Prototype.GameInformation
         {
             Name = name;
         }
-        #endregion
+		#endregion
 
-        #region [パブリックメソッド]
+		#region [パブリックメソッド]
+
+		public void SetGameState(GameState gameState)
+		{
+			this.gameState = gameState.Clone();
+		}
+
+
         /// <summary>
         /// ゴーストの初期配置を設定するメソッド
         /// </summary>

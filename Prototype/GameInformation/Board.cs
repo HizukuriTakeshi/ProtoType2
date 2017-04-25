@@ -18,7 +18,7 @@ namespace Prototype.GameInformation
         #endregion
 
 
-        #region　[アクセサ]
+        #region [アクセサ]
         /// <summary>
         /// Objectのアクセサ
         /// </summary>

@@ -344,5 +344,25 @@ namespace Prototype.GameSystem
             return false;
         }
 
+		public GameState Clone(){
+			GameState cloned = (GameState)MemberwiseClone();
+			if(this.Board != null){
+				cloned.Board = (GhostType[,])this.Board.Clone();
+			}
+			if (this.M_Board != null)
+			{
+				cloned.M_Board = (Object[,])this.M_Board.Clone();
+			}
+			if(this.P1ghostList != null){
+				cloned.P1ghostList = new List<Ghost>(this.P1ghostList);
+			}
+
+			if (this.P2ghostList != null)
+			{
+				cloned.P2ghostList = new List<Ghost>(this.P2ghostList);
+			}
+			return cloned;
+		}
+
     }
 }
