@@ -97,6 +97,15 @@ namespace Prototype.GameInformation
 			this.gameState = gameState.Clone();
 		}
 
+		public GhostType[,] GetBoardState(){
+			return gameState.Board;
+		}
+		public FieldObject GetMyPlayerID(){
+			return gameState.currentPlayer;
+		}
+
+
+
 
         /// <summary>
         /// ゴーストの初期配置を設定するメソッド
@@ -106,6 +115,10 @@ namespace Prototype.GameInformation
         {
             this.initialPlacement = init;
         }
+
+
+
+
 
         /// <summary>
         /// 移動させるゴーストと方向を決定するメソッド

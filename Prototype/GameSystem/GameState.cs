@@ -19,22 +19,25 @@ namespace Prototype.GameSystem
         /// <summary>
         /// 仮
         /// </summary>
-        private Object[,] m_Board = new Object[8, 6];
+        private FieldObject[,] m_Board = new FieldObject[8, 6];
 	private GhostType[,] board = new GhostType[6, 6];
+		private FieldObject[,] boardState = new FieldObject[6, 6];
 
 
         private List<Ghost> p1GhostList = new List<Ghost>();
         private List<Ghost> p2GhostList = new List<Ghost>();
 
-		protected Move currentPlayerMove=null;
-		public Object currentPlayer= Object.blank;
+		public Move currentPlayerMove=null;
+		public FieldObject currentPlayer= FieldObject.blank;
+
+		private const int THINKTIME = 500;
 
         #endregion
 
 
         #region [アクセサ]
         
-        public Object[,] M_Board
+        public FieldObject[,] M_Board
         {
             set
             {
@@ -55,6 +58,13 @@ namespace Prototype.GameSystem
 			get{
 				return board;
 			}
+		}
+
+		public FieldObject[,] BoardState{
+			set { this.boardState = value; }
+			get { return this.boardState; }
+
+
 		}
 
         public List<Ghost> P1ghostList
@@ -84,9 +94,10 @@ namespace Prototype.GameSystem
 		public Move CurrePlayerntMove
 		{
 			get { return this.currentPlayerMove; }
+			set { this.currentPlayerMove = value; }
 		}
 
-		public Object CurrentPlayer
+		public FieldObject CurrentPlayer
 		{
 			get { return this.currentPlayer; }
 			set { this.currentPlayer = value; }
@@ -153,6 +164,7 @@ namespace Prototype.GameSystem
 
             ResetGhostPostion();
             SetGhostPostionInVirtual();
+			SetBoardState();
 			ResetGhostPositionInBoard();
 			SetGhostPositionInBoard();
 
@@ -164,14 +176,29 @@ namespace Prototype.GameSystem
         {
             foreach (Ghost g in P1ghostList)
             {
-                M_Board[g.P.X, g.P.Y] = Object.P1;
+                M_Board[g.P.X, g.P.Y] = FieldObject.P1;
             }
 
             foreach (Ghost g in P2ghostList)
             {
-                M_Board[g.P.X, g.P.Y] = Object.P2;
+                M_Board[g.P.X, g.P.Y] = FieldObject.P2;
             }
         }
+		/// <summary>
+		/// Sets the state of the board.
+		/// </summary>
+		public void SetBoardState()
+		{
+			for (int i = 0; i < BoardState.GetLength(0);i++)
+			{
+				for (int j = 0; j < BoardState.GetLength(1);j++) 
+				{
+					BoardState[i, j] = M_Board[i+1, j];
+				}
+
+			}	
+		}
+
 
 		public void SetGhostPositionInBoard(){
 			//P1リスト
@@ -229,13 +256,14 @@ namespace Prototype.GameSystem
 
 
 
+
         public void ResetGhostPostion()
         {
             for (int i = 0; i < M_Board.GetLength(0); i++)
             {
                 for (int j = 0; j < M_Board.GetLength(1); j++)
                 {
-                    M_Board[i, j] = Object.blank;
+                    M_Board[i, j] = FieldObject.blank;
                 }
             }
         }
@@ -268,11 +296,11 @@ namespace Prototype.GameSystem
             #endregion
         }
 
-        public int GetGhostCount(Object o, GhostAttribute gt)
+        public int GetGhostCount(FieldObject o, GhostAttribute gt)
         {
             int count = 0;
 
-            if (o.Equals(Object.P1))
+            if (o.Equals(FieldObject.P1))
             {
                 foreach (Ghost g in P1ghostList)
                 {
@@ -282,7 +310,7 @@ namespace Prototype.GameSystem
                     }
                 }
             }
-            else if (o.Equals(Object.P2))
+            else if (o.Equals(FieldObject.P2))
             {
                 foreach (Ghost g in P2ghostList)
                 {
@@ -296,10 +324,10 @@ namespace Prototype.GameSystem
             return count;
         }
 
-        public Boolean IsGhostAtExit(Object o)
+        public Boolean IsGhostAtExit(FieldObject o)
         {
             //Ghostlistを検索し出口にいないかチェック
-            if (o.Equals(Object.P1))
+            if (o.Equals(FieldObject.P1))
             {
 
                 foreach (Ghost g in P1ghostList)
@@ -319,7 +347,7 @@ namespace Prototype.GameSystem
                     }
                 }
             }
-            else if (o.Equals(Object.P2))
+            else if (o.Equals(FieldObject.P2))
             {
                 foreach (Ghost g in P2ghostList)
                 {
@@ -351,7 +379,7 @@ namespace Prototype.GameSystem
 			}
 			if (this.M_Board != null)
 			{
-				cloned.M_Board = (Object[,])this.M_Board.Clone();
+				cloned.M_Board = (FieldObject[,])this.M_Board.Clone();
 			}
 			if(this.P1ghostList != null){
 				cloned.P1ghostList = new List<Ghost>(this.P1ghostList);
@@ -362,6 +390,11 @@ namespace Prototype.GameSystem
 				cloned.P2ghostList = new List<Ghost>(this.P2ghostList);
 			}
 			return cloned;
+		}
+
+		public int ThinkTime
+		{
+			get { return THINKTIME; }
 		}
 
     }

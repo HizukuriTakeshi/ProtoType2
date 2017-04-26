@@ -44,13 +44,13 @@ namespace Prototype.GameSystem
             set;
         }
 
-        public Object TurnPlayer
+        public FieldObject TurnPlayer
         {
             get;
             set;
         }
 
-        public Object NotTurnPlayer
+        public FieldObject NotTurnPlayer
         {
             get;
             set;
@@ -92,19 +92,19 @@ namespace Prototype.GameSystem
             set;
         }
 
-
+		private int processFPS;
         #endregion
 
 
         #region [コンストラクタ]
-        public GameManager(AbstractPlayer p1, AbstractPlayer p2, int finalturn)
+        public GameManager(AbstractPlayer p1, AbstractPlayer p2, int finalturn, int fps)
         {
             P1 = p1;
             P2 = p2;
             FinalTurn = finalturn;
             Turn = 0;
-            TurnPlayer = Object.P1;
-            NotTurnPlayer = Object.P2;
+            TurnPlayer = FieldObject.P1;
+            NotTurnPlayer = FieldObject.P2;
 
             P1.PlayerNumber = 1;
             P2.PlayerNumber = -1;
@@ -121,6 +121,8 @@ namespace Prototype.GameSystem
             P2_EvilGhostNum = 4;
             P2_GoodGhostNum = 4;
 
+			this.processFPS = fps;
+
             gamestate = new GameState(P1.InitialPlacement, P2.InitialPlacement);
         }
 		#endregion
@@ -132,12 +134,12 @@ namespace Prototype.GameSystem
 		{
 			foreach (Ghost g in gamestate.P1ghostList)
 			{
-				gamestate.M_Board[g.P.X, g.P.Y] = Object.P1;
+				gamestate.M_Board[g.P.X, g.P.Y] = FieldObject.P1;
 			}
 
 			foreach (Ghost g in gamestate.P2ghostList)
 			{
-				gamestate.M_Board[g.P.X, g.P.Y] = Object.P2;
+				gamestate.M_Board[g.P.X, g.P.Y] = FieldObject.P2;
 			}
 		}
 
@@ -212,7 +214,7 @@ namespace Prototype.GameSystem
 			{
 				for (int j = 0; j < gamestate.M_Board.GetLength(1); j++)
 				{
-					gamestate.M_Board[i, j] = Object.blank;
+					gamestate.M_Board[i, j] = FieldObject.blank;
 				}
 			}
 		}
@@ -246,11 +248,11 @@ namespace Prototype.GameSystem
 			#endregion
 		}
 
-		public int GetGhostCount(Object o, GhostAttribute gt)
+		public int GetGhostCount(FieldObject o, GhostAttribute gt)
 		{
 			int count = 0;
 
-			if (o.Equals(Object.P1))
+			if (o.Equals(FieldObject.P1))
 			{
 				foreach (Ghost g in gamestate.P1ghostList)
 				{
@@ -260,7 +262,7 @@ namespace Prototype.GameSystem
 					}
 				}
 			}
-			else if (o.Equals(Object.P2))
+			else if (o.Equals(FieldObject.P2))
 			{
 				foreach (Ghost g in gamestate.P2ghostList)
 				{
@@ -274,10 +276,10 @@ namespace Prototype.GameSystem
 			return count;
 		}
 
-		public Boolean IsGhostAtExit(Object o)
+		public Boolean IsGhostAtExit(FieldObject o)
 		{
 			//Ghostlistを検索し出口にいないかチェック
-			if (o.Equals(Object.P1))
+			if (o.Equals(FieldObject.P1))
 			{
 				Debug.WriteLine("P1");
 				foreach (Ghost g in gamestate.P1ghostList)
@@ -299,7 +301,7 @@ namespace Prototype.GameSystem
 					}
 				}
 			}
-			else if (o.Equals(Object.P2))
+			else if (o.Equals(FieldObject.P2))
 			{
 				foreach (Ghost g in gamestate.P2ghostList)
 				{
@@ -353,16 +355,16 @@ namespace Prototype.GameSystem
             {
                 Evil = Square.P1Evil;
                 Good = Square.P1Good;
-                TurnPlayer = Object.P1;
-                NotTurnPlayer = Object.P2;
+                TurnPlayer = FieldObject.P1;
+                NotTurnPlayer = FieldObject.P2;
                 Console.WriteLine("Next Turn:1");
             }
             else
             {
                 Evil = Square.P2Evil;
                 Good = Square.P2Good;
-                TurnPlayer = Object.P2;
-                NotTurnPlayer = Object.P1;
+                TurnPlayer = FieldObject.P2;
+                NotTurnPlayer = FieldObject.P1;
                 Console.WriteLine("Next Turn:2");
             }
             Turn++;
@@ -374,7 +376,7 @@ namespace Prototype.GameSystem
 			//書き換え用変数
 			Move _m = new Move(new Position(m.Pos.X, m.Pos.Y), m.GhostM);
 
-			if (TurnPlayer.Equals(Object.P1))
+			if (TurnPlayer.Equals(FieldObject.P1))
             {
 				//board変換
 				_m.Pos.X = m.Pos.X+1;
@@ -622,7 +624,7 @@ namespace Prototype.GameSystem
                 return true;
             }
 
-            if (TurnPlayer.Equals(Object.P1))
+            if (TurnPlayer.Equals(FieldObject.P1))
             {
 
 
@@ -632,7 +634,7 @@ namespace Prototype.GameSystem
                 }
 
             }
-            else if (TurnPlayer.Equals(Object.P2))
+            else if (TurnPlayer.Equals(FieldObject.P2))
             {
                 if (p.X == 7 && p.Y == 0 || p.X == 7 && p.Y == 5)
                 {
@@ -732,12 +734,13 @@ Console.WriteLine("{0} Win!", TurnPlayer);
 			DisplayBoard();
 			for (int i = 0; i < FinalTurn; i++)
 			{
-				gamestate.CurrentPlayer = Object.P1;
-				//MovePlayer()に変える
-				GetPlayerMove();
+				gamestate.CurrentPlayer = FieldObject.P1;
+                //getplayermove->MovePlayer
+                MovePlayer();
+				//GetPlayerMove();
 				//gamestateを更新
 				P1.SetGameState(gamestate);
-				GetPlayerMove();
+				//GetPlayerMove();
 				if (VorDCheck())
 				{
 					break;
@@ -746,12 +749,14 @@ Console.WriteLine("{0} Win!", TurnPlayer);
 				DisplayBoard();
 				NextTurn();
 
-				gamestate.CurrentPlayer = Object.P2;
-				//MovePlayer()に変える
-				GetPlayerMove();
+				gamestate.CurrentPlayer = FieldObject.P2;
+                //GetPlayerMve->MovePlayer
+                MovePlayer();
+				//GetPlayerMove();
 				//gamestateを更新
+				//gamestateを反転して渡す
 				P2.SetGameState(gamestate);
-				GetPlayerMove();
+				//GetPlayerMove();
 				if (VorDCheck())
 				{
 					break;
@@ -769,67 +774,108 @@ Console.WriteLine("{0} Win!", TurnPlayer);
 		/// Gets the player move.
 		/// GamestateにplayerMoveを代入する
 		/// </summary>
-		private void GetPlayerMove()
+		private void GetPlayerMove(CancellationToken cancelToken)
 		{
-			
+
 			//gameState.CurrentPlayerMove = playerList[gameState.CurrentPlayer].GetMove();
 			//tmpMove->gamestate.currentGameplayerMoveを引数に
 			//ただし，tempMoveはAbstractplayerのmoveに変換する
 			//processGameにはMovePlayer()を記述
 			//
+			try
+			{
+				while (true)
+				{
+					//
+					// もし、外部でキャンセルされていた場合
+					// このメソッドはOperationCanceledExceptionを発生させる。
+					//
+					cancelToken.ThrowIfCancellationRequested();
+
+
+					if (gamestate.currentPlayer.Equals(FieldObject.P1))
+			{
+				gamestate.CurrePlayerntMove = P1.GetMove();
+			}
+			else
+				if (gamestate.currentPlayer.Equals(FieldObject.P2))
+			{
+				gamestate.CurrePlayerntMove = P1.GetMove();
+			}
 			MoveGhost(TmpMove());
+
+				}
+			}
+			catch (OperationCanceledException ex)
+			{
+				//
+				// キャンセルされた.
+				//
+				Console.WriteLine(">>> {0}", ex.Message);
+			}
+		
+		}
+
+		private void MovePlayer()
+		{
+
+			Thread thread = null;
+			var cts = new CancellationTokenSource();
+			Boolean isThreadRunning = false;
+			Boolean isThreadTimeOut;
+
+			TimeSpan timeSpan;
+			DateTime endTime;
+			DateTime startTime = DateTime.Now;
+
+			while (true)
+			{
+				if (!isThreadRunning)
+				{
+					//thread = new Thread(new ThreadStart(GetPlayerMove));
+					//thread.Start();
+					isThreadRunning = true;
+
+
+
+                    thread = new Thread(() => GetPlayerMove(cts.Token));
+                    thread.Start();
+
+				}
+				else
+				{
+					endTime = DateTime.Now;
+					timeSpan = endTime - startTime;
+					if (timeSpan.TotalMilliseconds > gamestate.ThinkTime)
+					{
+
+                        //スレッドを強制終了させる
+                        cts.Cancel();
+
+						isThreadTimeOut = true;
+
+						break;
+					}
+					if (!thread.IsAlive)
+					{
+						isThreadTimeOut = false;
+						break;
+					}
+				}
 			}
 
-		//private void MovePlayer()
-		//{
-
-		//	Thread thread = null;
-		//	Boolean isThreadRunning = false;
-		//	Boolean isThreadTimeOut;
-
-		//	TimeSpan timeSpan;
-		//	DateTime endTime;
-		//	DateTime startTime = DateTime.Now;
-
-		//	while (true)
-		//	{
-		//		if (!isThreadRunning)
-		//		{
-		//			thread = new Thread(new ThreadStart(GetPlayerMove));
-		//			thread.Start();
-		//			isThreadRunning = true;
-		//		}
-		//		else
-		//		{
-		//			endTime = DateTime.Now;
-		//			timeSpan = endTime - startTime;
-		//			if (timeSpan.TotalMilliseconds > gameState.ThinkTime)
-		//			{
-		//				thread.Abort();
-		//				isThreadTimeOut = true;
-
-		//				break;
-		//			}
-		//			if (!thread.IsAlive)
-		//			{
-		//				isThreadTimeOut = false;
-		//				break;
-		//			}
-		//		}
-		//	}
-
-		//	if (!isThreadTimeOut)
-		//	{
+			if (!isThreadTimeOut)
+			{
 		//		JudgeMove();
-		//		if (timeSpan.TotalMilliseconds + processFPS < gameState.ThinkTime)
-		//			Thread.Sleep(processFPS);
-		//	}
+				if (timeSpan.TotalMilliseconds + processFPS < gamestate.ThinkTime)
+					Thread.Sleep(processFPS);
+			}
 
-		//	else
-		//	{
-		//		Debug.WriteLine("Time OVER");
-		//	}
-		//}
+			else
+			{
+				Debug.WriteLine("Time OVER");
+			}
+		}
 
 
         /// <summary>
@@ -837,7 +883,18 @@ Console.WriteLine("{0} Win!", TurnPlayer);
         /// </summary>
         public Move TmpMove()
         {
-            GhostMove gm = new GhostMove();
+			for (int i = 0; i < gamestate.BoardState.GetLength(0); i++)
+			{
+				for (int j = 0; j < gamestate.BoardState.GetLength(1); j++)
+				{
+					Console.Write("{0}  ",gamestate.BoardState[i, j]);
+				}
+				Console.WriteLine();
+
+			}
+
+
+			GhostMove gm = new GhostMove();
 
             Console.WriteLine("x");
             int x = int.Parse(Console.ReadLine());

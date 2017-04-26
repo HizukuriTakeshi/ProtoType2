@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Prototype.GameSystem
 {
-    enum Object
+    enum FieldObject
     {
         blank,
         P1,
