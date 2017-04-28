@@ -5,14 +5,14 @@ using Prototype.GameSystem;
 
 namespace Prototype.GameInformation
 {
-	//test
+    //test
     abstract class AbstractPlayer
     {
-		#region [フィールド]
-		/// <summary>
-		/// プレイヤーの名前
-		/// </summary>
-		protected string name;
+        #region [フィールド]
+        /// <summary>
+        /// プレイヤーの名前
+        /// </summary>
+        protected string name;
         /// <summary>
         /// プレイヤーの番号
         /// </summary>
@@ -22,7 +22,7 @@ namespace Prototype.GameInformation
         /// </summary>
         protected GhostAttribute[,] initialPlacement = new GhostAttribute[2, 4];
 
-	private	GameState gameState;
+        private GameState gameState;
 
         #endregion
 
@@ -65,7 +65,7 @@ namespace Prototype.GameInformation
 
             get
             {
-                return this.initialPlacement; 
+                return this.initialPlacement;
             }
         }
 
@@ -88,21 +88,77 @@ namespace Prototype.GameInformation
         {
             Name = name;
         }
-		#endregion
+        #endregion
 
-		#region [パブリックメソッド]
+        #region [パブリックメソッド]
 
-		public void SetGameState(GameState gameState)
-		{
-			this.gameState = gameState.Clone();
-		}
+        public void SetGameState(GameState gameState)
+        {
+            this.gameState = gameState.Clone();
+        }
 
-		public GhostType[,] GetBoardState(){
-			return gameState.Board;
-		}
-		public FieldObject GetMyPlayerID(){
-			return gameState.currentPlayer;
-		}
+        /// <summary>
+        /// 盤面上のゴーストの位置を取得する
+        /// </summary>
+        /// <returns></returns>
+        public FieldObject[,] GetBoardState()
+        {
+            return gameState.BoardState;
+        }
+
+        /// <summary>
+        /// 自身のFieldObjectにおける値を取得する
+        /// </summary>
+        /// <returns>
+        /// Type:FieldObject
+        /// P1 or P2
+        /// </returns>
+        public FieldObject GetMyPlayerID()
+        {
+            return gameState.currentPlayer;
+        }
+
+        /// <summary>
+        /// 自身のGhostのリストを取得する
+        /// </summary>
+        /// <returns>
+        /// Type:List<Ghost>
+        /// </returns>
+        public List<Ghost> GetMyGhostList()
+        {
+            if (gameState.currentPlayer.Equals(FieldObject.P1))
+            {
+                return gameState.P1ghostList;
+            }
+            else
+            if (gameState.currentPlayer.Equals(FieldObject.P2))
+            {
+                return gameState.P2ghostList;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 指定した属性のゴーストを取得
+        /// </summary>
+        /// <param name="ga"></param>
+        /// <returns></returns>
+        public List<Ghost> GetMyGoodGhostList(GhostAttribute ga)
+        {
+            List<Ghost> glist = new List<Ghost>();
+
+            //getmyghostlistをループ
+            foreach (Ghost g in GetMyGhostList())
+            {
+                if (g.Gt.Equals(ga))
+                {
+                    glist.Add(g);
+                }
+            }
+            return glist;
+        }
+
 
 
 
@@ -125,7 +181,7 @@ namespace Prototype.GameInformation
         /// </summary>
         /// <returns>移動させるゴーストの位置と方向のメンバを持つクラス Move</returns>
         public abstract Move GetMove();
-        
+
 
         #endregion
     }

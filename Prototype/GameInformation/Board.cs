@@ -42,7 +42,7 @@ namespace Prototype.GameInformation
         /// </summary>
         public Board()
         {
-           
+
         }
         #endregion
 

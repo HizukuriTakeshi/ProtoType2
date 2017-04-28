@@ -11,10 +11,10 @@ namespace Prototype.GameSystem
     class GameManager
     {
 
-		private List<AbstractPlayer> playerList = new List<AbstractPlayer>();
+        private List<AbstractPlayer> playerList = new List<AbstractPlayer>();
 
         #region [フィールド]
-		public GameState gamestate
+        public GameState gamestate
         {
             get;
             set;
@@ -92,7 +92,7 @@ namespace Prototype.GameSystem
             set;
         }
 
-		private int processFPS;
+        private int processFPS;
         #endregion
 
 
@@ -109,8 +109,8 @@ namespace Prototype.GameSystem
             P1.PlayerNumber = 1;
             P2.PlayerNumber = -1;
 
-			playerList.Add(p1);
-			playerList.Add(p2);
+            playerList.Add(p1);
+            playerList.Add(p2);
 
             Evil = Square.P1Evil;
             Good = Square.P1Good;
@@ -121,212 +121,210 @@ namespace Prototype.GameSystem
             P2_EvilGhostNum = 4;
             P2_GoodGhostNum = 4;
 
-			this.processFPS = fps;
+            this.processFPS = fps;
 
             gamestate = new GameState(P1.InitialPlacement, P2.InitialPlacement);
         }
-		#endregion
+        #endregion
 
-		#region [メソッド]
-
-
-		public void SetGhostPostionInVirtual()
-		{
-			foreach (Ghost g in gamestate.P1ghostList)
-			{
-				gamestate.M_Board[g.P.X, g.P.Y] = FieldObject.P1;
-			}
-
-			foreach (Ghost g in gamestate.P2ghostList)
-			{
-				gamestate.M_Board[g.P.X, g.P.Y] = FieldObject.P2;
-			}
-		}
-
-		public void SetGhostPositionInBoard()
-		{
-			//P1リスト
-			foreach (Ghost g in gamestate.P1ghostList)
-			{
-				//vb->b変換
-				int x = g.P.X - 1;
-				int y = g.P.Y;
-
-				//例外処理
-				if (x < 0 || y < 0 || x > 6 || y > 6)
-				{
-
-				}
-				else
-				{
-					if (g.Gt.Equals(GhostAttribute.evil))
-					{
-						gamestate.Board[x, y] = GhostType.P1GhostEvil;
-					}
-					else if (g.Gt.Equals(GhostAttribute.good))
-					{
-						gamestate.Board[x, y] = GhostType.P1GhostGood;
-					}
-					else
-					{
-						gamestate.Board[x, y] = GhostType.Blank;
-					}
-
-				}
-			}
-
-			foreach (Ghost g in gamestate.P2ghostList)
-			{
-				//vb->b変換
-				int x = g.P.X - 1;
-				int y = g.P.Y;
-
-				//例外処理
-				if (x < 0 || y < 0 || x > 6 || y > 6)
-				{
-
-				}
-				else
-				{
-					if (g.Gt.Equals(GhostAttribute.evil))
-					{
-						gamestate.Board[x, y] = GhostType.P2GhostEvil;
-					}
-					else if (g.Gt.Equals(GhostAttribute.good))
-					{
-						gamestate.Board[x, y] = GhostType.P2GhostGood;
-					}
-					else
-					{
-						gamestate.Board[x, y] = GhostType.Blank;
-					}
-
-				}
-			}
-
-		}
+        #region [メソッド]
 
 
+        public void SetGhostPostionInVirtual()
+        {
+            foreach (Ghost g in gamestate.P1ghostList)
+            {
+                gamestate.M_Board[g.P.X, g.P.Y] = FieldObject.P1;
+            }
 
-		public void ResetGhostPostion()
-		{
-			for (int i = 0; i < gamestate.M_Board.GetLength(0); i++)
-			{
-				for (int j = 0; j < gamestate.M_Board.GetLength(1); j++)
-				{
-					gamestate.M_Board[i, j] = FieldObject.blank;
-				}
-			}
-		}
+            foreach (Ghost g in gamestate.P2ghostList)
+            {
+                gamestate.M_Board[g.P.X, g.P.Y] = FieldObject.P2;
+            }
+        }
 
-		public void ResetGhostPositionInBoard()
-		{
-			for (int i = 0; i < gamestate.Board.GetLength(0); i++)
-			{
-				for (int j = 0; j < gamestate.Board.GetLength(1); j++)
-				{
-					gamestate.Board[i, j] = GhostType.Blank;
-				}
-			}
+        public void SetGhostPositionInBoard()
+        {
+            //P1リスト
+            foreach (Ghost g in gamestate.P1ghostList)
+            {
+                //vb->b変換
+                int x = g.P.X - 1;
+                int y = g.P.Y;
 
-		}
+                //例外処理
+                if (x < 0 || y < 0 || x > 6 || y > 6)
+                {
 
+                }
+                else
+                {
+                    if (g.Gt.Equals(GhostAttribute.evil))
+                    {
+                        gamestate.Board[x, y] = GhostType.P1GhostEvil;
+                    }
+                    else if (g.Gt.Equals(GhostAttribute.good))
+                    {
+                        gamestate.Board[x, y] = GhostType.P1GhostGood;
+                    }
+                    else
+                    {
+                        gamestate.Board[x, y] = GhostType.Blank;
+                    }
 
-		public int GetSamePosGhostIndex(List<Ghost> glist, Position p)
-		{
-			int index = -1;
-			foreach (Ghost g in glist)
-			{
-				if (g.P.X == p.X && g.P.Y == p.Y)
-				{
-					index = glist.IndexOf(g);
-					break;
-				}
-			}
-			return index;
+                }
+            }
 
-			#endregion
-		}
+            foreach (Ghost g in gamestate.P2ghostList)
+            {
+                //vb->b変換
+                int x = g.P.X - 1;
+                int y = g.P.Y;
 
-		public int GetGhostCount(FieldObject o, GhostAttribute gt)
-		{
-			int count = 0;
+                //例外処理
+                if (x < 0 || y < 0 || x > 6 || y > 6)
+                {
 
-			if (o.Equals(FieldObject.P1))
-			{
-				foreach (Ghost g in gamestate.P1ghostList)
-				{
-					if (g.Gt.Equals(gt))
-					{
-						count++;
-					}
-				}
-			}
-			else if (o.Equals(FieldObject.P2))
-			{
-				foreach (Ghost g in gamestate.P2ghostList)
-				{
-					if (g.Gt.Equals(gt))
-					{
-						count++;
-					}
-				}
-			}
+                }
+                else
+                {
+                    if (g.Gt.Equals(GhostAttribute.evil))
+                    {
+                        gamestate.Board[x, y] = GhostType.P2GhostEvil;
+                    }
+                    else if (g.Gt.Equals(GhostAttribute.good))
+                    {
+                        gamestate.Board[x, y] = GhostType.P2GhostGood;
+                    }
+                    else
+                    {
+                        gamestate.Board[x, y] = GhostType.Blank;
+                    }
 
-			return count;
-		}
+                }
+            }
 
-		public Boolean IsGhostAtExit(FieldObject o)
-		{
-			//Ghostlistを検索し出口にいないかチェック
-			if (o.Equals(FieldObject.P1))
-			{
-				Debug.WriteLine("P1");
-				foreach (Ghost g in gamestate.P1ghostList)
-				{
-					Debug.WriteLine("roop");
-					if (g.P.X == 0 && g.P.Y == 0 || g.P.X == 0 && g.P.Y == 5)
-					{
-						Debug.WriteLine("0005");
-						gamestate.P1ghostList.Remove(g);
-						if (g.Gt.Equals((GhostAttribute.good)))
-						{
-							return true;
-						}
-						else
-						{
-							break;
-						}
-
-					}
-				}
-			}
-			else if (o.Equals(FieldObject.P2))
-			{
-				foreach (Ghost g in gamestate.P2ghostList)
-				{
-					if (g.P.X == 7 && g.P.Y == 0 || g.P.X == 7 && g.P.Y == 5)
-					{
-						gamestate.P2ghostList.Remove(g);
-
-						if (g.Gt.Equals((GhostAttribute.good)))
-						{
-							return true;
-						}
-						else
-						{
-							break;
-						}
-					}
-
-				}
-
-			}
-
-			return false;
-		}
+        }
 
 
+
+        public void ResetGhostPostion()
+        {
+            for (int i = 0; i < gamestate.M_Board.GetLength(0); i++)
+            {
+                for (int j = 0; j < gamestate.M_Board.GetLength(1); j++)
+                {
+                    gamestate.M_Board[i, j] = FieldObject.blank;
+                }
+            }
+        }
+
+        public void ResetGhostPositionInBoard()
+        {
+            for (int i = 0; i < gamestate.Board.GetLength(0); i++)
+            {
+                for (int j = 0; j < gamestate.Board.GetLength(1); j++)
+                {
+                    gamestate.Board[i, j] = GhostType.Blank;
+                }
+            }
+
+        }
+
+
+        public int GetSamePosGhostIndex(List<Ghost> glist, Position p)
+        {
+            int index = -1;
+            foreach (Ghost g in glist)
+            {
+                if (g.P.X == p.X && g.P.Y == p.Y)
+                {
+                    index = glist.IndexOf(g);
+                    break;
+                }
+            }
+            return index;
+
+            #endregion
+        }
+
+        public int GetGhostCount(FieldObject o, GhostAttribute gt)
+        {
+            int count = 0;
+
+            if (o.Equals(FieldObject.P1))
+            {
+                foreach (Ghost g in gamestate.P1ghostList)
+                {
+                    if (g.Gt.Equals(gt))
+                    {
+                        count++;
+                    }
+                }
+            }
+            else if (o.Equals(FieldObject.P2))
+            {
+                foreach (Ghost g in gamestate.P2ghostList)
+                {
+                    if (g.Gt.Equals(gt))
+                    {
+                        count++;
+                    }
+                }
+            }
+
+            return count;
+        }
+
+        public Boolean IsGhostAtExit(FieldObject o)
+        {
+            //Ghostlistを検索し出口にいないかチェック
+            if (o.Equals(FieldObject.P1))
+            {
+                Debug.WriteLine("P1");
+                foreach (Ghost g in gamestate.P1ghostList)
+                {
+                    Debug.WriteLine("roop");
+                    if (g.P.X == 0 && g.P.Y == 0 || g.P.X == 0 && g.P.Y == 5)
+                    {
+                        Debug.WriteLine("0005");
+                        gamestate.P1ghostList.Remove(g);
+                        if (g.Gt.Equals((GhostAttribute.good)))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            break;
+                        }
+
+                    }
+                }
+            }
+            else if (o.Equals(FieldObject.P2))
+            {
+                foreach (Ghost g in gamestate.P2ghostList)
+                {
+                    if (g.P.X == 7 && g.P.Y == 0 || g.P.X == 7 && g.P.Y == 5)
+                    {
+                        gamestate.P2ghostList.Remove(g);
+
+                        if (g.Gt.Equals((GhostAttribute.good)))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                }
+
+            }
+
+            return false;
+        }
 
 
 
@@ -348,7 +346,9 @@ namespace Prototype.GameSystem
 
 
 
-		public void NextTurn()
+
+
+        public void NextTurn()
         {
 
             if ((Turn % 2).Equals(1))
@@ -371,20 +371,20 @@ namespace Prototype.GameSystem
         }
 
 
-		public void MoveGhost(Move m)
+        public void MoveGhost(Move m)
         {
-			//書き換え用変数
-			Move _m = new Move(new Position(m.Pos.X, m.Pos.Y), m.GhostM);
+            //書き換え用変数
+            Move _m = new Move(new Position(m.Pos.X, m.Pos.Y), m.GhostM);
 
-			if (TurnPlayer.Equals(FieldObject.P1))
+            if (TurnPlayer.Equals(FieldObject.P1))
             {
-				//board変換
-				_m.Pos.X = m.Pos.X+1;
-				_m.Pos.Y = m.Pos.Y;
+                //board変換
+                _m.Pos.X = m.Pos.X + 1;
+                _m.Pos.Y = m.Pos.Y;
 
 
-				//移動可能性
-				if (IsGhostMovable(_m))
+                //移動可能性
+                if (IsGhostMovable(_m))
                 {
 
                     //移動(ゴーストリストのpositionを書き換える)
@@ -441,9 +441,9 @@ namespace Prototype.GameSystem
             }
             else
             {
-				//Borad変換
-				_m.Pos.X = m.Pos.X + 1;
-				_m.Pos.Y = m.Pos.Y;
+                //Borad変換
+                _m.Pos.X = m.Pos.X + 1;
+                _m.Pos.Y = m.Pos.Y;
 
                 //移動可能性
                 if (IsGhostMovable(_m))
@@ -503,9 +503,9 @@ namespace Prototype.GameSystem
             }
 
             gamestate.ResetGhostPostion();
-			gamestate.ResetGhostPositionInBoard();
+            gamestate.ResetGhostPositionInBoard();
             gamestate.SetGhostPostionInVirtual();
-			gamestate.SetGhostPositionInBoard();
+            gamestate.SetGhostPositionInBoard();
 
         }
 
@@ -528,7 +528,7 @@ namespace Prototype.GameSystem
                         //移動先に自分のゴーストがいないか
                         if (!GhostExists(new Position(m.Pos.X + 1, m.Pos.Y)))
                         {
-							Console.WriteLine("Can move");
+                            Console.WriteLine("Can move");
                             return true;
                         }
                     }
@@ -560,7 +560,7 @@ namespace Prototype.GameSystem
                         //移動先に自分のゴーストがいないか
                         if (!GhostExists(new Position(m.Pos.X, m.Pos.Y + 1)))
                         {
-							Console.WriteLine("Can move");
+                            Console.WriteLine("Can move");
                             return true;
                         }
                     }
@@ -576,7 +576,7 @@ namespace Prototype.GameSystem
                         //移動先に自分のゴーストがいないか
                         if (!GhostExists(new Position(m.Pos.X - 1, m.Pos.Y)))
                         {
-							Console.WriteLine("Can move");
+                            Console.WriteLine("Can move");
                             return true;
                         }
                     }
@@ -677,11 +677,11 @@ namespace Prototype.GameSystem
                 return true;
             }
 
-			//ゴーストの位置での終了条件
+            //ゴーストの位置での終了条件
 
             if (gamestate.IsGhostAtExit(TurnPlayer))
             {
-Console.WriteLine("{0} Win!", TurnPlayer);
+                Console.WriteLine("{0} Win!", TurnPlayer);
                 return true;
             }
             return false;
@@ -709,173 +709,174 @@ Console.WriteLine("{0} Win!", TurnPlayer);
             }
         }
 
-		public void DisplayBoard()
-		{
-			for (int i = 0; i < gamestate.Board.GetLength(1); i++)
-			{
-				Console.Write("{0,11} ", i);
-			}
-			Console.WriteLine();
-			for (int i = 0; i < gamestate.Board.GetLength(0); i++)
-			{
-				Console.Write("{0} ", i);
-				for (int j = 0; j < gamestate.Board.GetLength(1); j++)
-				{
-					Console.Write("{0,11} ", gamestate.Board[i, j]);
-				}
-				Console.WriteLine();
-			}
-		}
+        public void DisplayBoard()
+        {
+            for (int i = 0; i < gamestate.Board.GetLength(1); i++)
+            {
+                Console.Write("{0,11} ", i);
+            }
+            Console.WriteLine();
+            for (int i = 0; i < gamestate.Board.GetLength(0); i++)
+            {
+                Console.Write("{0} ", i);
+                for (int j = 0; j < gamestate.Board.GetLength(1); j++)
+                {
+                    Console.Write("{0,11} ", gamestate.Board[i, j]);
+                }
+                Console.WriteLine();
+            }
+        }
 
 
 
-		public void ProcessGame(){
-			DisplayVirtualBoard();
-			DisplayBoard();
-			for (int i = 0; i < FinalTurn; i++)
-			{
-				gamestate.CurrentPlayer = FieldObject.P1;
+        public void ProcessGame()
+        {
+            DisplayVirtualBoard();
+            DisplayBoard();
+            for (int i = 0; i < FinalTurn; i++)
+            {
+                gamestate.CurrentPlayer = FieldObject.P1;
                 //getplayermove->MovePlayer
                 MovePlayer();
-				//GetPlayerMove();
-				//gamestateを更新
-				P1.SetGameState(gamestate);
-				//GetPlayerMove();
-				if (VorDCheck())
-				{
-					break;
-				}
-				DisplayVirtualBoard();
-				DisplayBoard();
-				NextTurn();
+                //GetPlayerMove();
+                //gamestateを更新
+                P1.SetGameState(gamestate);
+                //GetPlayerMove();
+                if (VorDCheck())
+                {
+                    break;
+                }
+                DisplayVirtualBoard();
+                DisplayBoard();
+                NextTurn();
 
-				gamestate.CurrentPlayer = FieldObject.P2;
+                gamestate.CurrentPlayer = FieldObject.P2;
                 //GetPlayerMve->MovePlayer
                 MovePlayer();
-				//GetPlayerMove();
-				//gamestateを更新
-				//gamestateを反転して渡す
-				P2.SetGameState(gamestate);
-				//GetPlayerMove();
-				if (VorDCheck())
-				{
-					break;
-				}
-				DisplayVirtualBoard();
-				DisplayBoard();
-				NextTurn();
+                //GetPlayerMove();
+                //gamestateを更新
+                //gamestateを反転して渡す
+                P2.SetGameState(gamestate);
+                //GetPlayerMove();
+                if (VorDCheck())
+                {
+                    break;
+                }
+                DisplayVirtualBoard();
+                DisplayBoard();
+                NextTurn();
 
 
-			}
+            }
 
-		}
+        }
 
-		/// <summary>
-		/// Gets the player move.
-		/// GamestateにplayerMoveを代入する
-		/// </summary>
-		private void GetPlayerMove(CancellationToken cancelToken)
-		{
+        /// <summary>
+        /// Gets the player move.
+        /// GamestateにplayerMoveを代入する
+        /// </summary>
+        private void GetPlayerMove(CancellationToken cancelToken)
+        {
 
-			//gameState.CurrentPlayerMove = playerList[gameState.CurrentPlayer].GetMove();
-			//tmpMove->gamestate.currentGameplayerMoveを引数に
-			//ただし，tempMoveはAbstractplayerのmoveに変換する
-			//processGameにはMovePlayer()を記述
-			//
-			try
-			{
-				while (true)
-				{
-					//
-					// もし、外部でキャンセルされていた場合
-					// このメソッドはOperationCanceledExceptionを発生させる。
-					//
-					cancelToken.ThrowIfCancellationRequested();
+            //gameState.CurrentPlayerMove = playerList[gameState.CurrentPlayer].GetMove();
+            //tmpMove->gamestate.currentGameplayerMoveを引数に
+            //ただし，tempMoveはAbstractplayerのmoveに変換する
+            //processGameにはMovePlayer()を記述
+            //
+            try
+            {
+                while (true)
+                {
+                    //
+                    // もし、外部でキャンセルされていた場合
+                    // このメソッドはOperationCanceledExceptionを発生させる。
+                    //
+                    cancelToken.ThrowIfCancellationRequested();
 
 
-					if (gamestate.currentPlayer.Equals(FieldObject.P1))
-			{
-				gamestate.CurrePlayerntMove = P1.GetMove();
-			}
-			else
-				if (gamestate.currentPlayer.Equals(FieldObject.P2))
-			{
-				gamestate.CurrePlayerntMove = P1.GetMove();
-			}
-			MoveGhost(TmpMove());
+                    if (gamestate.currentPlayer.Equals(FieldObject.P1))
+                    {
+                        gamestate.CurrePlayerntMove = P1.GetMove();
+                    }
+                    else
+                if (gamestate.currentPlayer.Equals(FieldObject.P2))
+                    {
+                        gamestate.CurrePlayerntMove = P1.GetMove();
+                    }
+                    MoveGhost(TmpMove());
 
-				}
-			}
-			catch (OperationCanceledException ex)
-			{
-				//
-				// キャンセルされた.
-				//
-				Console.WriteLine(">>> {0}", ex.Message);
-			}
-		
-		}
+                }
+            }
+            catch (OperationCanceledException ex)
+            {
+                //
+                // キャンセルされた.
+                //
+                Console.WriteLine(">>> {0}", ex.Message);
+            }
 
-		private void MovePlayer()
-		{
+        }
 
-			Thread thread = null;
-			var cts = new CancellationTokenSource();
-			Boolean isThreadRunning = false;
-			Boolean isThreadTimeOut;
+        private void MovePlayer()
+        {
 
-			TimeSpan timeSpan;
-			DateTime endTime;
-			DateTime startTime = DateTime.Now;
+            Thread thread = null;
+            var cts = new CancellationTokenSource();
+            Boolean isThreadRunning = false;
+            Boolean isThreadTimeOut;
 
-			while (true)
-			{
-				if (!isThreadRunning)
-				{
-					//thread = new Thread(new ThreadStart(GetPlayerMove));
-					//thread.Start();
-					isThreadRunning = true;
+            TimeSpan timeSpan;
+            DateTime endTime;
+            DateTime startTime = DateTime.Now;
+
+            while (true)
+            {
+                if (!isThreadRunning)
+                {
+                    //thread = new Thread(new ThreadStart(GetPlayerMove));
+                    //thread.Start();
+                    isThreadRunning = true;
 
 
 
                     thread = new Thread(() => GetPlayerMove(cts.Token));
                     thread.Start();
 
-				}
-				else
-				{
-					endTime = DateTime.Now;
-					timeSpan = endTime - startTime;
-					if (timeSpan.TotalMilliseconds > gamestate.ThinkTime)
-					{
+                }
+                else
+                {
+                    endTime = DateTime.Now;
+                    timeSpan = endTime - startTime;
+                    if (timeSpan.TotalMilliseconds > gamestate.ThinkTime)
+                    {
 
                         //スレッドを強制終了させる
                         cts.Cancel();
 
-						isThreadTimeOut = true;
+                        isThreadTimeOut = true;
 
-						break;
-					}
-					if (!thread.IsAlive)
-					{
-						isThreadTimeOut = false;
-						break;
-					}
-				}
-			}
+                        break;
+                    }
+                    if (!thread.IsAlive)
+                    {
+                        isThreadTimeOut = false;
+                        break;
+                    }
+                }
+            }
 
-			if (!isThreadTimeOut)
-			{
-		//		JudgeMove();
-				if (timeSpan.TotalMilliseconds + processFPS < gamestate.ThinkTime)
-					Thread.Sleep(processFPS);
-			}
+            if (!isThreadTimeOut)
+            {
+                //		JudgeMove();
+                if (timeSpan.TotalMilliseconds + processFPS < gamestate.ThinkTime)
+                    Thread.Sleep(processFPS);
+            }
 
-			else
-			{
-				Debug.WriteLine("Time OVER");
-			}
-		}
+            else
+            {
+                Debug.WriteLine("Time OVER");
+            }
+        }
 
 
         /// <summary>
@@ -883,24 +884,24 @@ Console.WriteLine("{0} Win!", TurnPlayer);
         /// </summary>
         public Move TmpMove()
         {
-			for (int i = 0; i < gamestate.BoardState.GetLength(0); i++)
-			{
-				for (int j = 0; j < gamestate.BoardState.GetLength(1); j++)
-				{
-					Console.Write("{0}  ",gamestate.BoardState[i, j]);
-				}
-				Console.WriteLine();
+            for (int i = 0; i < gamestate.BoardState.GetLength(0); i++)
+            {
+                for (int j = 0; j < gamestate.BoardState.GetLength(1); j++)
+                {
+                    Console.Write("{0}  ", gamestate.BoardState[i, j]);
+                }
+                Console.WriteLine();
 
-			}
+            }
 
 
-			GhostMove gm = new GhostMove();
+            GhostMove gm = new GhostMove();
 
             Console.WriteLine("x");
             int x = int.Parse(Console.ReadLine());
             Console.WriteLine("y");
 
-			int y = int.Parse(Console.ReadLine());
+            int y = int.Parse(Console.ReadLine());
             Console.WriteLine("gm");
             string gmString = Console.ReadLine();
 

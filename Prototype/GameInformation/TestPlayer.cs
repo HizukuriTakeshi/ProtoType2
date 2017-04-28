@@ -25,11 +25,11 @@ namespace Prototype.GameInformation
 
         public override Move GetMove()
         {
-            Move m = new Move(new Position(1,1), GhostMove.Down);
+            Move m = new Move(new Position(1, 1), GhostMove.Down);
             return m;
         }
 
-        
+
 
     }
 }
