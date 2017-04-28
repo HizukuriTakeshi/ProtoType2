@@ -837,6 +837,7 @@ namespace Prototype.GameSystem
 
                     task = new Task(() => GetPlayerMove(cts.Token));
                     task.Start();
+                    Debug.WriteLine("Task start");
                 }
                 else
                 {
@@ -855,6 +856,7 @@ namespace Prototype.GameSystem
                     //スレッドが終了している時
                     if (!task.IsCanceled || !task.IsCompleted)
                     {
+                        Debug.WriteLine("Thread end");
                         isTaskTimeOut = false;
                         break;
                     }

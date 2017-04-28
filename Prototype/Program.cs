@@ -9,7 +9,7 @@ namespace Prototype
         static void Main(string[] args)
         {
 
-            GameManager gameManager = new GameManager(new TestPlayer("a"), new TestPlayer("b"), 200,500);
+            GameManager gameManager = new GameManager(new TestPlayer("a"), new TestPlayer("b"), 200,20);
 
             ProtoTypeUI protoType = new ProtoTypeUI(gameManager);
         }
