@@ -1,10 +1,11 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using Prototype.GameInformation;
 using Prototype.GameSystem;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Prototype.GameSystem
 {
@@ -781,7 +782,6 @@ namespace Prototype.GameSystem
             //gameState.CurrentPlayerMove = playerList[gameState.CurrentPlayer].GetMove();
             //tmpMove->gamestate.currentGameplayerMoveを引数に
             //ただし，tempMoveはAbstractplayerのmoveに変換する
-            //processGameにはMovePlayer()を記述
             //
             try
             {
@@ -803,7 +803,7 @@ namespace Prototype.GameSystem
                     {
                         gamestate.CurrePlayerntMove = P1.GetMove();
                     }
-                    MoveGhost(TmpMove());
+                    //MoveGhost(TmpMove());
 
                 }
             }
@@ -820,10 +820,10 @@ namespace Prototype.GameSystem
         private void MovePlayer()
         {
 
-            Thread thread = null;
+            Task task = null;
             var cts = new CancellationTokenSource();
-            Boolean isThreadRunning = false;
-            Boolean isThreadTimeOut;
+            Boolean isTaskRunning = false;
+            Boolean isTaskTimeOut;
 
             TimeSpan timeSpan;
             DateTime endTime;
@@ -831,17 +831,12 @@ namespace Prototype.GameSystem
 
             while (true)
             {
-                if (!isThreadRunning)
+                if (!isTaskRunning)
                 {
-                    //thread = new Thread(new ThreadStart(GetPlayerMove));
-                    //thread.Start();
-                    isThreadRunning = true;
+                    isTaskRunning = true;
 
-
-
-                    thread = new Thread(() => GetPlayerMove(cts.Token));
-                    thread.Start();
-
+                    task = new Task(() => GetPlayerMove(cts.Token));
+                    task.Start();
                 }
                 else
                 {
@@ -849,26 +844,29 @@ namespace Prototype.GameSystem
                     timeSpan = endTime - startTime;
                     if (timeSpan.TotalMilliseconds > gamestate.ThinkTime)
                     {
-
                         //スレッドを強制終了させる
                         cts.Cancel();
 
-                        isThreadTimeOut = true;
+                        isTaskTimeOut = true;
+                        break;
+                    }
 
-                        break;
-                    }
-                    if (!thread.IsAlive)
+
+                    //スレッドが終了している時
+                    if (!task.IsCanceled || !task.IsCompleted)
                     {
-                        isThreadTimeOut = false;
+                        isTaskTimeOut = false;
                         break;
                     }
+
                 }
             }
 
-            if (!isThreadTimeOut)
+            if (!isTaskTimeOut)
             {
                 //		JudgeMove();
                 if (timeSpan.TotalMilliseconds + processFPS < gamestate.ThinkTime)
+                    Debug.WriteLine("{0} < {1}", timeSpan.TotalMilliseconds + processFPS,gamestate.ThinkTime);
                     Thread.Sleep(processFPS);
             }
 
