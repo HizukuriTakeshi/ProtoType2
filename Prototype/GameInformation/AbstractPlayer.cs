@@ -159,7 +159,35 @@ namespace Prototype.GameInformation
             return glist;
         }
 
-       
+       /// <summary>
+       /// 指定した属性のゴーストの数を取得
+       /// </summary>
+       /// <param name="ga"></param>
+       /// <returns></returns>
+       public int GetGhostNum(FieldObject player, GhostAttribute ga)
+        {
+            int num = 0;
+            List<Ghost> glist = null;
+
+            //
+            if(player.Equals(FieldObject.P1))
+            {
+                glist = gameState.P1ghostList;
+            }
+            else if(player.Equals(FieldObject.P2))
+            {
+                glist = gameState.P2ghostList;
+            }
+
+            foreach (Ghost g in glist)
+            {
+                if (g.Gt.Equals(ga))
+                {
+                    num++;
+                }
+            }
+            return num;
+        }
 
         /// <summary>
         /// ゴーストの初期配置を設定するメソッド
