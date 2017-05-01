@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using Prototype.GameInformation;
@@ -117,22 +117,23 @@ namespace Prototype.GameSystem
             set { this.notcurrentPlayer = value; }
         }
 
-        public int TurnNum{
+        public int TurnNum
+        {
             get { return this.turnNum; }
             set { this.turnNum = value; }
         }
 
-    
 
-		#endregion
 
-			#region [コンストラクタ]
-			/// <summary>
-			/// VirtualBoardコンストラクタ
-			/// </summary>
-			/// <param name="gtArray_1">1Pのゴースト初期配置</param>
-			/// <param name="gtArray_2">2Pのゴースト初期配置</param>
-		public GameState(GhostAttribute[,] gtArray_1, GhostAttribute[,] gtArray_2)
+        #endregion
+
+        #region [コンストラクタ]
+        /// <summary>
+        /// VirtualBoardコンストラクタ
+        /// </summary>
+        /// <param name="gtArray_1">1Pのゴースト初期配置</param>
+        /// <param name="gtArray_2">2Pのゴースト初期配置</param>
+        public GameState(GhostAttribute[,] gtArray_1, GhostAttribute[,] gtArray_2)
         {
 
             //1Pは下側

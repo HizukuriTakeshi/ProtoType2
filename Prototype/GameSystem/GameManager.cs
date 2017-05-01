@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using Prototype.GameInformation;
@@ -215,6 +215,207 @@ namespace Prototype.GameSystem
 
         }
 
+        #endregion
+
+        #region [ゲーム進行メソッド]
+        public void ProcessGame()
+        {
+            //のちに消す
+            //DisplayVirtualBoard();
+            DisplayBoard();
+            //
+
+            System.Threading.Thread.Sleep(3000);
+
+            for (int i = 0; i < FinalTurn; i++)
+            {
+
+                gamestate.CurrentPlayer = FieldObject.P1;
+                gamestate.NotCurrentPlayer = FieldObject.P2;
+                NextTurn();
+                ProcessTurn();
+                if (VorDCheck())
+                {
+                    break;
+                }
+
+                //のちに消す
+                //DisplayVirtualBoard();
+                DisplayBoard();
+                //
+
+                gamestate.CurrentPlayer = FieldObject.P2;
+                gamestate.NotCurrentPlayer = FieldObject.P1;
+                NextTurn();
+                ProcessTurn();
+                if (VorDCheck())
+                {
+                    break;
+                }
+                //DisplayVirtualBoard();
+                DisplayBoard();
+
+
+
+            }
+
+        }
+
+        private void ProcessTurn()
+        {
+
+
+            if (gamestate.currentPlayer.Equals(FieldObject.P1))
+            {
+                P1.SetGameState(gamestate);
+            }
+            else
+             if (gamestate.currentPlayer.Equals(FieldObject.P2))
+            {
+                //gamestateを反転して渡す
+                P2.SetGameState(gamestate);
+            }
+            MovePlayer();
+        }
+
+        /// <summary>
+        /// Gets the player move.
+        /// GamestateにplayerMoveを代入する
+        /// </summary>
+        private void GetPlayerMove(CancellationToken cancelToken)
+        {
+            try
+            {
+                while (true)
+                {
+                    //
+                    // もし、外部でキャンセルされていた場合
+                    // このメソッドはOperationCanceledExceptionを発生させる。
+                    //
+                    cancelToken.ThrowIfCancellationRequested();
+
+
+                    if (gamestate.currentPlayer.Equals(FieldObject.P1))
+                    {
+                        gamestate.CurrentPlayerMove = P1.GetMove();
+                        break;
+                    }
+                    else
+                if (gamestate.currentPlayer.Equals(FieldObject.P2))
+                    {
+                        gamestate.CurrentPlayerMove = P2.GetMove();
+                        break;
+                    }
+
+                }
+            }
+            catch (OperationCanceledException ex)
+            {
+                //
+                // キャンセルされた.
+                //
+                Debug.WriteLine(">>> {0}", ex.Message);
+            }
+
+        }
+
+        private void MovePlayer()
+        {
+
+            Task task = null;
+            var cts = new CancellationTokenSource();
+            Boolean isTaskRunning = false;
+            Boolean isTaskTimeOut;
+
+            TimeSpan timeSpan;
+            DateTime endTime;
+            DateTime startTime = DateTime.Now;
+
+            while (true)
+            {
+                if (!isTaskRunning)
+                {
+                    isTaskRunning = true;
+
+                    Debug.WriteLine(">>> Task start");
+                    task = new Task(() => GetPlayerMove(cts.Token));
+                    task.Start();
+
+                }
+                else
+                {
+
+                    endTime = DateTime.Now;
+                    timeSpan = endTime - startTime;
+                    if (timeSpan.TotalMilliseconds > gamestate.ThinkTime)
+                    {
+                        //スレッドを強制終了させる
+                        cts.Cancel();
+                        Debug.WriteLine("Task Cancel");
+                        isTaskTimeOut = true;
+                        break;
+                    }
+
+
+                    //スレッドが終了した時
+                    if (task.IsCanceled || task.IsCompleted)
+                    {
+                        Debug.WriteLine(">>> Task end");
+                        isTaskTimeOut = false;
+                        break;
+                    }
+
+                }
+            }
+
+            if (!isTaskTimeOut)
+            {
+                //		JudgeMove();
+                //まだgamestate.currentPlayerMoveにインスタンスがないと言われる
+                //Move tmp = new Move(gamestate.currentPlayerMove.Pos,gamestate.currentPlayerMove.GhostM);
+                MoveGhost(gamestate.currentPlayerMove);
+                if (timeSpan.TotalMilliseconds + processFPS < gamestate.ThinkTime)
+                    Debug.WriteLine("{0} < {1}", timeSpan.TotalMilliseconds + processFPS, gamestate.ThinkTime);
+                Thread.Sleep(processFPS);
+            }
+
+            else
+            {
+                Debug.WriteLine("Time OVER");
+            }
+        }
+
+        public Boolean VorDCheck()
+        {
+
+            //ゲームの終了条件を確認
+            //ゴースト数での終了条件
+            Console.WriteLine("good_{0} {1}", gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.good), gamestate.NotCurrentPlayer);
+            if (gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.good).Equals(0))
+            {
+                Console.WriteLine("{0} {1}", gamestate.NotCurrentPlayer, gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.good));
+                Console.WriteLine("{0} Win!", gamestate.currentPlayer);
+                return true;
+            }
+
+            Console.WriteLine("evil_{0} {1}", gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.evil), gamestate.NotCurrentPlayer);
+            if (gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.evil).Equals(0))
+            {
+                Console.WriteLine("{0} Win!", gamestate.NotCurrentPlayer);
+                return true;
+            }
+
+            //ゴーストの位置での終了条件
+
+            if (gamestate.IsGhostAtExit(gamestate.currentPlayer))
+            {
+                Console.WriteLine("{0} Win!", gamestate.currentPlayer);
+                return true;
+            }
+            return false;
+        }
+
+        #endregion
 
         public int GetSamePosGhostIndex(List<Ghost> glist, Position p)
         {
@@ -229,7 +430,6 @@ namespace Prototype.GameSystem
             }
             return index;
 
-            #endregion
         }
 
         public int GetGhostCount(FieldObject o, GhostAttribute gt)
@@ -310,32 +510,10 @@ namespace Prototype.GameSystem
             return false;
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         public void NextTurn()
         {
-			gamestate.TurnNum++;
-            Console.WriteLine("{0} {1}",gamestate.TurnNum,gamestate.TurnNum % 2);
+            gamestate.TurnNum++;
+            Console.WriteLine("{0} {1}", gamestate.TurnNum, gamestate.TurnNum % 2);
             if ((gamestate.TurnNum % 2).Equals(1))
             {
                 Evil = Square.P1Evil;
@@ -347,13 +525,12 @@ namespace Prototype.GameSystem
             {
                 Evil = Square.P2Evil;
                 Good = Square.P2Good;
-				//TurnPlayer = FieldObject.P2;
-				//gamestate.NotCurrentPlayer = FieldObject.P1;
-			}
+                //TurnPlayer = FieldObject.P2;
+                //gamestate.NotCurrentPlayer = FieldObject.P1;
+            }
             Console.WriteLine("Turn{0} {1}", gamestate.TurnNum, gamestate.currentPlayer);
 
         }
-
 
         public void MoveGhost(Move m)
         {
@@ -641,35 +818,6 @@ namespace Prototype.GameSystem
             return false;
         }
 
-        public Boolean VorDCheck()
-        {
-
-            //ゲームの終了条件を確認
-            //ゴースト数での終了条件
-            Console.WriteLine("good_{0} {1}", gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.good), gamestate.NotCurrentPlayer);
-            if (gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.good).Equals(0))
-            {
-                Console.WriteLine("{0} {1}", gamestate.NotCurrentPlayer, gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.good));
-                Console.WriteLine("{0} Win!",gamestate.currentPlayer);
-                return true;
-            }
-
-            Console.WriteLine("evil_{0} {1}", gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.evil), gamestate.NotCurrentPlayer);
-            if (gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.evil).Equals(0))
-            {
-                Console.WriteLine("{0} Win!", gamestate.NotCurrentPlayer);
-                return true;
-            }
-
-            //ゴーストの位置での終了条件
-
-            if (gamestate.IsGhostAtExit(gamestate.currentPlayer))
-            {
-                Console.WriteLine("{0} Win!", gamestate.currentPlayer);
-                return true;
-            }
-            return false;
-        }
 
 
         /// <summary>
@@ -710,176 +858,6 @@ namespace Prototype.GameSystem
                 Console.WriteLine();
             }
         }
-
-
-
-        public void ProcessGame()
-        {
-            //のちに消す
-            //DisplayVirtualBoard();
-            DisplayBoard();
-            //
-
-            System.Threading.Thread.Sleep(3000);
-
-            for (int i = 0; i < FinalTurn; i++)
-            {
-                
-                gamestate.CurrentPlayer = FieldObject.P1;
-                gamestate.NotCurrentPlayer = FieldObject.P2;
-                NextTurn();
-                ProcessTurn();
-                if (VorDCheck())
-                {
-                    break;
-                }
-
-                //のちに消す
-                //DisplayVirtualBoard();
-                DisplayBoard();
-                //
-
-                gamestate.CurrentPlayer = FieldObject.P2;
-                gamestate.NotCurrentPlayer = FieldObject.P1;
-				NextTurn();
-                ProcessTurn();
-                if (VorDCheck())
-                {
-                    break;
-                }
-                //DisplayVirtualBoard();
-                DisplayBoard();
-
-
-
-            }
-
-        }
-
-
-        private void ProcessTurn(){
-
-
-			if (gamestate.currentPlayer.Equals(FieldObject.P1))
-			{
-                P1.SetGameState(gamestate);
-			}
-			else
-			 if (gamestate.currentPlayer.Equals(FieldObject.P2))
-			{
-				//gamestateを反転して渡す
-				P2.SetGameState(gamestate);
-			}
-            MovePlayer();
-		}
-
-        /// <summary>
-        /// Gets the player move.
-        /// GamestateにplayerMoveを代入する
-        /// </summary>
-        private void GetPlayerMove(CancellationToken cancelToken)
-        {
-                    try
-            {
-                while (true)
-                {
-                    //
-                    // もし、外部でキャンセルされていた場合
-                    // このメソッドはOperationCanceledExceptionを発生させる。
-                    //
-                    cancelToken.ThrowIfCancellationRequested();
-
-
-                    if (gamestate.currentPlayer.Equals(FieldObject.P1))
-                    {
-                        gamestate.CurrentPlayerMove = P1.GetMove();
-                        break;
-                    }
-                    else
-                if (gamestate.currentPlayer.Equals(FieldObject.P2))
-                    {
-					   gamestate.CurrentPlayerMove = P2.GetMove();
-                        break;
-                    }
-
-                }
-            }
-            catch (OperationCanceledException ex)
-            {
-                //
-                // キャンセルされた.
-                //
-                Debug.WriteLine(">>> {0}", ex.Message);
-            }
-
-        }
-
-        private void MovePlayer()
-        {
-
-            Task task = null;
-            var cts = new CancellationTokenSource();
-            Boolean isTaskRunning = false;
-            Boolean isTaskTimeOut;
-
-            TimeSpan timeSpan;
-            DateTime endTime;
-            DateTime startTime = DateTime.Now;
-
-            while (true)
-            {
-                if (!isTaskRunning)
-                {
-                    isTaskRunning = true;
-
-					Debug.WriteLine(">>> Task start");
-                    task = new Task(() => GetPlayerMove(cts.Token));
-                    task.Start();
-
-                }
-                else
-                {
-
-                    endTime = DateTime.Now;
-                    timeSpan = endTime - startTime;
-                    if (timeSpan.TotalMilliseconds > gamestate.ThinkTime)
-                    {
-                        //スレッドを強制終了させる
-                        cts.Cancel();
-                        Debug.WriteLine("Task Cancel");
-                        isTaskTimeOut = true;
-                        break;
-                    }
-
-
-                    //スレッドが終了した時
-                    if (task.IsCanceled || task.IsCompleted)
-                    {
-						Debug.WriteLine(">>> Task end");
-                        isTaskTimeOut = false;
-                        break;
-                    }
-
-                }
-            }
-
-            if (!isTaskTimeOut)
-            {
-                //		JudgeMove();
-                //まだgamestate.currentPlayerMoveにインスタンスがないと言われる
-                //Move tmp = new Move(gamestate.currentPlayerMove.Pos,gamestate.currentPlayerMove.GhostM);
-				MoveGhost(gamestate.currentPlayerMove);
-                if (timeSpan.TotalMilliseconds + processFPS < gamestate.ThinkTime)
-                    Debug.WriteLine("{0} < {1}", timeSpan.TotalMilliseconds + processFPS,gamestate.ThinkTime);
-                    Thread.Sleep(processFPS);
-            }
-
-            else
-            {
-                Debug.WriteLine("Time OVER");
-            }
-        }
-
 
         /// <summary>
         /// テスト用Move入力関数(コンソールから)
