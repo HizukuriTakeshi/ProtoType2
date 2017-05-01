@@ -159,31 +159,7 @@ namespace Prototype.GameInformation
             return glist;
         }
 
-        /// <summary>
-        /// 指定した位置のゴーストの初期位置を取得
-        /// </summary>
-        /// <param name="p"></param>
-        /// <returns></returns>
-        public Position GetInitialPlacement(Position p)
-        {
-            foreach (Ghost g in gameState.P1ghostList)
-            {
-                if (g.P.X.Equals(p.X) && g.P.Y.Equals(p.Y))
-                {
-                    return g.InitPos;
-                }
-            }
-
-            foreach (Ghost g in gameState.P2ghostList)
-            {
-                if (g.P.X.Equals(p.X) && g.P.Y.Equals(p.Y))
-                {
-                    return g.InitPos;
-                }
-            }
-
-            return null;
-        }
+       
 
         /// <summary>
         /// ゴーストの初期配置を設定するメソッド

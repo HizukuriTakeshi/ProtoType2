@@ -370,10 +370,7 @@ namespace Prototype.GameSystem
 
             if (!isTaskTimeOut)
             {
-                //		JudgeMove();
-                //まだgamestate.currentPlayerMoveにインスタンスがないと言われる
-                //Move tmp = new Move(gamestate.currentPlayerMove.Pos,gamestate.currentPlayerMove.GhostM);
-                MoveGhost(gamestate.currentPlayerMove);
+                JudgeMove(gamestate.currentPlayerMove);
                 if (timeSpan.TotalMilliseconds + processFPS < gamestate.ThinkTime)
                     Debug.WriteLine("{0} < {1}", timeSpan.TotalMilliseconds + processFPS, gamestate.ThinkTime);
                 Thread.Sleep(processFPS);
@@ -414,102 +411,7 @@ namespace Prototype.GameSystem
             }
             return false;
         }
-
-        #endregion
-
-        public int GetSamePosGhostIndex(List<Ghost> glist, Position p)
-        {
-            int index = -1;
-            foreach (Ghost g in glist)
-            {
-                if (g.P.X == p.X && g.P.Y == p.Y)
-                {
-                    index = glist.IndexOf(g);
-                    break;
-                }
-            }
-            return index;
-
-        }
-
-        public int GetGhostCount(FieldObject o, GhostAttribute gt)
-        {
-            int count = 0;
-
-            if (o.Equals(FieldObject.P1))
-            {
-                foreach (Ghost g in gamestate.P1ghostList)
-                {
-                    if (g.Gt.Equals(gt))
-                    {
-                        count++;
-                    }
-                }
-            }
-            else if (o.Equals(FieldObject.P2))
-            {
-                foreach (Ghost g in gamestate.P2ghostList)
-                {
-                    if (g.Gt.Equals(gt))
-                    {
-                        count++;
-                    }
-                }
-            }
-
-            return count;
-        }
-
-        public Boolean IsGhostAtExit(FieldObject o)
-        {
-            //Ghostlistを検索し出口にいないかチェック
-            if (o.Equals(FieldObject.P1))
-            {
-                Debug.WriteLine("P1");
-                foreach (Ghost g in gamestate.P1ghostList)
-                {
-                    Debug.WriteLine("roop");
-                    if (g.P.X == 0 && g.P.Y == 0 || g.P.X == 0 && g.P.Y == 5)
-                    {
-                        Debug.WriteLine("0005");
-                        gamestate.P1ghostList.Remove(g);
-                        if (g.Gt.Equals((GhostAttribute.good)))
-                        {
-                            return true;
-                        }
-                        else
-                        {
-                            break;
-                        }
-
-                    }
-                }
-            }
-            else if (o.Equals(FieldObject.P2))
-            {
-                foreach (Ghost g in gamestate.P2ghostList)
-                {
-                    if (g.P.X == 7 && g.P.Y == 0 || g.P.X == 7 && g.P.Y == 5)
-                    {
-                        gamestate.P2ghostList.Remove(g);
-
-                        if (g.Gt.Equals((GhostAttribute.good)))
-                        {
-                            return true;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-
-                }
-
-            }
-
-            return false;
-        }
-
+        
         public void NextTurn()
         {
             gamestate.TurnNum++;
@@ -531,8 +433,9 @@ namespace Prototype.GameSystem
             Console.WriteLine("Turn{0} {1}", gamestate.TurnNum, gamestate.currentPlayer);
 
         }
+        #endregion
 
-        public void MoveGhost(Move m)
+        public void JudgeMove(Move m)
         {
             //書き換え用変数
             Move _m = new Move(new Position(m.Pos.X, m.Pos.Y), m.GhostM);
@@ -668,6 +571,100 @@ namespace Prototype.GameSystem
             gamestate.SetGhostPostionInVirtual();
             gamestate.SetGhostPositionInBoard();
 
+        }
+        
+
+        public int GetSamePosGhostIndex(List<Ghost> glist, Position p)
+        {
+            int index = -1;
+            foreach (Ghost g in glist)
+            {
+                if (g.P.X == p.X && g.P.Y == p.Y)
+                {
+                    index = glist.IndexOf(g);
+                    break;
+                }
+            }
+            return index;
+
+        }
+
+        public int GetGhostCount(FieldObject o, GhostAttribute gt)
+        {
+            int count = 0;
+
+            if (o.Equals(FieldObject.P1))
+            {
+                foreach (Ghost g in gamestate.P1ghostList)
+                {
+                    if (g.Gt.Equals(gt))
+                    {
+                        count++;
+                    }
+                }
+            }
+            else if (o.Equals(FieldObject.P2))
+            {
+                foreach (Ghost g in gamestate.P2ghostList)
+                {
+                    if (g.Gt.Equals(gt))
+                    {
+                        count++;
+                    }
+                }
+            }
+
+            return count;
+        }
+
+        public Boolean IsGhostAtExit(FieldObject o)
+        {
+            //Ghostlistを検索し出口にいないかチェック
+            if (o.Equals(FieldObject.P1))
+            {
+                Debug.WriteLine("P1");
+                foreach (Ghost g in gamestate.P1ghostList)
+                {
+                    Debug.WriteLine("roop");
+                    if (g.P.X == 0 && g.P.Y == 0 || g.P.X == 0 && g.P.Y == 5)
+                    {
+                        Debug.WriteLine("0005");
+                        gamestate.P1ghostList.Remove(g);
+                        if (g.Gt.Equals((GhostAttribute.good)))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            break;
+                        }
+
+                    }
+                }
+            }
+            else if (o.Equals(FieldObject.P2))
+            {
+                foreach (Ghost g in gamestate.P2ghostList)
+                {
+                    if (g.P.X == 7 && g.P.Y == 0 || g.P.X == 7 && g.P.Y == 5)
+                    {
+                        gamestate.P2ghostList.Remove(g);
+
+                        if (g.Gt.Equals((GhostAttribute.good)))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                }
+
+            }
+
+            return false;
         }
 
         /// <summary>
