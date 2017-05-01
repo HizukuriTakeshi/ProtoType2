@@ -241,7 +241,8 @@ namespace Prototype.GameSystem
 
                 //のちに消す
                 //DisplayVirtualBoard();
-                DisplayBoard();
+                //DisplayBoard();
+                //DisplayBoardState();
                 //
 
                 gamestate.CurrentPlayer = FieldObject.P2;
@@ -253,7 +254,8 @@ namespace Prototype.GameSystem
                     break;
                 }
                 //DisplayVirtualBoard();
-                DisplayBoard();
+                //DisplayBoard();
+				//DisplayBoardState();
 
 
 
@@ -277,6 +279,7 @@ namespace Prototype.GameSystem
                 P2.SetGameState(ConvertGameState(gamestate));
             //P2.SetGameState(gamestate);
             }
+
             MovePlayer();
         }
 
@@ -306,12 +309,16 @@ namespace Prototype.GameSystem
 				{
 					g.P.X = 5-g.P.X;
 					g.P.Y = 5-g.P.Y;
+					//Console.WriteLine(g.P.X + " " + g.P.Y);
+
 				}
+                //Console.WriteLine();
 				foreach (Ghost g in tmp.P2ghostList)
 				{
 					g.P.X = 5-g.P.X;
                     g.P.Y = 5-g.P.Y;
-				}
+				//Console.WriteLine(g.P.X + " " + g.P.Y);
+                }
             }
                 return tmp;
         }
@@ -466,7 +473,6 @@ namespace Prototype.GameSystem
         public void NextTurn()
         {
             gamestate.TurnNum++;
-            Console.WriteLine("{0} {1}", gamestate.TurnNum, gamestate.TurnNum % 2);
             if ((gamestate.TurnNum % 2).Equals(1))
             {
                 Evil = Square.P1Evil;
@@ -621,6 +627,7 @@ namespace Prototype.GameSystem
             gamestate.ResetGhostPositionInBoard();
             gamestate.SetGhostPostionInVirtual();
             gamestate.SetGhostPositionInBoard();
+            gamestate.SetBoardState();
 
         }
         
@@ -906,6 +913,24 @@ namespace Prototype.GameSystem
                 Console.WriteLine();
             }
         }
+
+		public void DisplayBoardState()
+		{
+			for (int i = 0; i < gamestate.BoardState.GetLength(1); i++)
+			{
+				Console.Write("{0,11} ", i);
+			}
+			Console.WriteLine();
+			for (int i = 0; i < gamestate.BoardState.GetLength(0); i++)
+			{
+				Console.Write("{0} ", i);
+				for (int j = 0; j < gamestate.BoardState.GetLength(1); j++)
+				{
+					Console.Write("{0,11} ", gamestate.BoardState[i, j]);
+				}
+				Console.WriteLine();
+			}
+		}
 
         /// <summary>
         /// テスト用Move入力関数(コンソールから)

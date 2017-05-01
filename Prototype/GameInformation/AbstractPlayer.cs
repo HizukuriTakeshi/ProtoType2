@@ -144,7 +144,7 @@ namespace Prototype.GameInformation
         /// </summary>
         /// <param name="ga"></param>
         /// <returns></returns>
-        public List<Ghost> GetMyGoodGhostList(GhostAttribute ga)
+        public List<Ghost> GetMyGhostList(GhostAttribute ga)
         {
             List<Ghost> glist = new List<Ghost>();
 
@@ -188,6 +188,31 @@ namespace Prototype.GameInformation
             }
             return num;
         }
+
+        public List<Position> GetGhostPositionList(FieldObject player)
+        {
+            List<Position> plist = new List<Position>();
+            List<Ghost> glist = new List<Ghost>();
+            if(player.Equals(FieldObject.P1))
+            {
+                glist = gameState.P1ghostList;
+            }
+            else if(player.Equals(FieldObject.P2))
+            {
+                glist = gameState.P2ghostList;
+            }
+
+
+
+                foreach (Ghost g in glist)
+                {
+                    plist.Add(g.P.Clone());
+                }
+            return plist;
+
+        }
+
+
 
         /// <summary>
         /// ゴーストの初期配置を設定するメソッド
