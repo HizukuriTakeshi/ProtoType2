@@ -724,10 +724,9 @@ namespace Prototype.GameSystem
 
             for (int i = 0; i < FinalTurn; i++)
             {
-                
                 gamestate.CurrentPlayer = FieldObject.P1;
                 gamestate.NotCurrentPlayer = FieldObject.P2;
-                NextTurn();
+				NextTurn();
                 ProcessTurn();
                 if (VorDCheck())
                 {
@@ -739,10 +738,11 @@ namespace Prototype.GameSystem
                 DisplayBoard();
                 //
 
+
                 gamestate.CurrentPlayer = FieldObject.P2;
                 gamestate.NotCurrentPlayer = FieldObject.P1;
-				NextTurn();
                 ProcessTurn();
+                NextTurn();
                 if (VorDCheck())
                 {
                     break;
