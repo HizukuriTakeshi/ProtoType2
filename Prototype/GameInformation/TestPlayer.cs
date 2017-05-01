@@ -26,6 +26,15 @@ namespace Prototype.GameInformation
         public override Move GetMove()
         {
             Move m = new Move(new Position(1, 1), GhostMove.Down);
+            for (int i = 0; i < GetBoardState().GetLength(0);i++)
+            {
+                for (int j = 0; j < GetBoardState().GetLength(1);j++)
+                {
+                    Console.Write("{0} ",GetBoardState()[i,j]);
+                }
+                Console.WriteLine();
+            }
+
             return m;
         }
 

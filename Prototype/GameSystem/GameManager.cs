@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using Prototype.GameInformation;
@@ -222,7 +222,7 @@ namespace Prototype.GameSystem
         {
             //のちに消す
             //DisplayVirtualBoard();
-            DisplayBoard();
+            //DisplayBoard();
             //
 
             System.Threading.Thread.Sleep(3000);
@@ -267,13 +267,13 @@ namespace Prototype.GameSystem
 
             if (gamestate.currentPlayer.Equals(FieldObject.P1))
             {
-                P1.SetGameState(gamestate);
+                P1.SetGameState(ConvertGameState(gamestate));
             }
             else
              if (gamestate.currentPlayer.Equals(FieldObject.P2))
             {
                 //gamestateを反転して渡す
-                P2.SetGameState(gamestate);
+                P2.SetGameState(ConvertGameState(gamestate));
             }
             MovePlayer();
         }
@@ -285,12 +285,50 @@ namespace Prototype.GameSystem
             GameState tmp = gs.Clone();
             //変換するプロパティ
             //ghostlistの初期位置と現在位置 (8,6になっているので)
-            //currentplayerが２Pならボードを反転
-            //さらにghostlistの２つもも反転
+            foreach(Ghost g in tmp.P1ghostList)
+            {
+                g.P.X = g.P.X - 1;
+            }
+			foreach (Ghost g in tmp.P2ghostList)
+			{
+				g.P.X = g.P.X - 1;
+			}
 
-            return tmp;
+            //currentplayerが２Pならボードを反転
+            if(gamestate.currentPlayer.Equals(FieldObject.P2))
+            {
+                tmp.BoardState = RotateClockwise(RotateClockwise(tmp.BoardState));
+
+				//さらにghostlistの２つも反転
+				foreach (Ghost g in tmp.P1ghostList)
+				{
+					g.P.X = 5-g.P.X;
+					g.P.Y = 5-g.P.Y;
+				}
+				foreach (Ghost g in tmp.P2ghostList)
+				{
+					g.P.X = 5-g.P.X;
+                    g.P.Y = 5-g.P.Y;
+				}
+            }
+                return tmp;
         }
 
+        FieldObject[,] RotateClockwise(FieldObject[,] g)
+        {
+            // 引数の2次元配列 g を時計回りに回転させたものを返す
+            int rows = g.GetLength(0);
+            int cols = g.GetLength(1);
+            var t = new FieldObject[cols, rows];
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    t[j, rows - i - 1] = g[i, j];
+                }
+            }
+            return t;
+        }
 
         /// <summary>
         /// Gets the player move.
