@@ -39,23 +39,7 @@ namespace Prototype.GameSystem
             set;
         }
 
-        public int Turn
-        {
-            get;
-            set;
-        }
 
-        public FieldObject TurnPlayer
-        {
-            get;
-            set;
-        }
-
-        public FieldObject NotTurnPlayer
-        {
-            get;
-            set;
-        }
 
         public Square Good
         {
@@ -103,9 +87,8 @@ namespace Prototype.GameSystem
             P1 = p1;
             P2 = p2;
             FinalTurn = finalturn;
-            Turn = 0;
-            TurnPlayer = FieldObject.P1;
-            NotTurnPlayer = FieldObject.P2;
+
+            //gamestate.NotCurrentPlayer = FieldObject.P2;
 
             P1.PlayerNumber = 1;
             P2.PlayerNumber = -1;
@@ -351,24 +334,24 @@ namespace Prototype.GameSystem
 
         public void NextTurn()
         {
-
-            if ((Turn % 2).Equals(1))
+			gamestate.TurnNum++;
+            Console.WriteLine("{0} {1}",gamestate.TurnNum,gamestate.TurnNum % 2);
+            if ((gamestate.TurnNum % 2).Equals(1))
             {
                 Evil = Square.P1Evil;
                 Good = Square.P1Good;
-                TurnPlayer = FieldObject.P1;
-                NotTurnPlayer = FieldObject.P2;
-                Console.WriteLine("Next Turn:1");
+                //TurnPlayer = FieldObject.P1;
+                //gamestate.NotCurrentPlayer = FieldObject.P2;
             }
             else
             {
                 Evil = Square.P2Evil;
                 Good = Square.P2Good;
-                TurnPlayer = FieldObject.P2;
-                NotTurnPlayer = FieldObject.P1;
-                Console.WriteLine("Next Turn:2");
-            }
-            Turn++;
+				//TurnPlayer = FieldObject.P2;
+				//gamestate.NotCurrentPlayer = FieldObject.P1;
+			}
+            Console.WriteLine("Turn{0} {1}", gamestate.TurnNum, gamestate.currentPlayer);
+
         }
 
 
@@ -377,7 +360,7 @@ namespace Prototype.GameSystem
             //書き換え用変数
             Move _m = new Move(new Position(m.Pos.X, m.Pos.Y), m.GhostM);
 
-            if (TurnPlayer.Equals(FieldObject.P1))
+            if (gamestate.currentPlayer.Equals(FieldObject.P1))
             {
                 //board変換
                 _m.Pos.X = m.Pos.X + 1;
@@ -529,7 +512,7 @@ namespace Prototype.GameSystem
                         //移動先に自分のゴーストがいないか
                         if (!GhostExists(new Position(m.Pos.X + 1, m.Pos.Y)))
                         {
-                            Console.WriteLine("Can move");
+                            Debug.WriteLine("Can move");
                             return true;
                         }
                     }
@@ -545,7 +528,7 @@ namespace Prototype.GameSystem
                         //移動先に自分のゴーストがいないか
                         if (!GhostExists(new Position(m.Pos.X, m.Pos.Y - 1)))
                         {
-                            Console.WriteLine("Can move");
+                            Debug.WriteLine("Can move");
                             return true;
                         }
                     }
@@ -561,7 +544,7 @@ namespace Prototype.GameSystem
                         //移動先に自分のゴーストがいないか
                         if (!GhostExists(new Position(m.Pos.X, m.Pos.Y + 1)))
                         {
-                            Console.WriteLine("Can move");
+                            Debug.WriteLine("Can move");
                             return true;
                         }
                     }
@@ -577,7 +560,7 @@ namespace Prototype.GameSystem
                         //移動先に自分のゴーストがいないか
                         if (!GhostExists(new Position(m.Pos.X - 1, m.Pos.Y)))
                         {
-                            Console.WriteLine("Can move");
+                            Debug.WriteLine("Can move");
                             return true;
                         }
                     }
@@ -586,7 +569,7 @@ namespace Prototype.GameSystem
 
             }
 
-            Console.WriteLine("already exist:{0} {1}", m.Pos.X, m.Pos.Y);
+            Debug.WriteLine("already exist:{0} {1}", m.Pos.X, m.Pos.Y);
             return false;
         }
 
@@ -601,7 +584,7 @@ namespace Prototype.GameSystem
             if (GhostIsInBoard(p))
             {
                 //位置pにゴーストが存在するか判定
-                if (gamestate.M_Board[p.X, p.Y].Equals(TurnPlayer))
+                if (gamestate.M_Board[p.X, p.Y].Equals(gamestate.currentPlayer))
                 {
                     return true;
                 }
@@ -625,7 +608,7 @@ namespace Prototype.GameSystem
                 return true;
             }
 
-            if (TurnPlayer.Equals(FieldObject.P1))
+            if (gamestate.currentPlayer.Equals(FieldObject.P1))
             {
 
 
@@ -635,7 +618,7 @@ namespace Prototype.GameSystem
                 }
 
             }
-            else if (TurnPlayer.Equals(FieldObject.P2))
+            else if (gamestate.currentPlayer.Equals(FieldObject.P2))
             {
                 if (p.X == 7 && p.Y == 0 || p.X == 7 && p.Y == 5)
                 {
@@ -663,26 +646,26 @@ namespace Prototype.GameSystem
 
             //ゲームの終了条件を確認
             //ゴースト数での終了条件
-            Console.WriteLine("good_{0} {1}", gamestate.GetGhostCount(NotTurnPlayer, GhostAttribute.good), NotTurnPlayer);
-            if (gamestate.GetGhostCount(NotTurnPlayer, GhostAttribute.good).Equals(0))
+            Console.WriteLine("good_{0} {1}", gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.good), gamestate.NotCurrentPlayer);
+            if (gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.good).Equals(0))
             {
-                Console.WriteLine("{0} {1}", NotTurnPlayer, gamestate.GetGhostCount(NotTurnPlayer, GhostAttribute.good));
-                Console.WriteLine("{0} Win!", TurnPlayer);
+                Console.WriteLine("{0} {1}", gamestate.NotCurrentPlayer, gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.good));
+                Console.WriteLine("{0} Win!",gamestate.currentPlayer);
                 return true;
             }
 
-            Console.WriteLine("evil_{0} {1}", gamestate.GetGhostCount(NotTurnPlayer, GhostAttribute.evil), NotTurnPlayer);
-            if (gamestate.GetGhostCount(NotTurnPlayer, GhostAttribute.evil).Equals(0))
+            Console.WriteLine("evil_{0} {1}", gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.evil), gamestate.NotCurrentPlayer);
+            if (gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.evil).Equals(0))
             {
-                Console.WriteLine("{0} Win!", NotTurnPlayer);
+                Console.WriteLine("{0} Win!", gamestate.NotCurrentPlayer);
                 return true;
             }
 
             //ゴーストの位置での終了条件
 
-            if (gamestate.IsGhostAtExit(TurnPlayer))
+            if (gamestate.IsGhostAtExit(gamestate.currentPlayer))
             {
-                Console.WriteLine("{0} Win!", TurnPlayer);
+                Console.WriteLine("{0} Win!", gamestate.currentPlayer);
                 return true;
             }
             return false;
@@ -732,45 +715,63 @@ namespace Prototype.GameSystem
 
         public void ProcessGame()
         {
-            DisplayVirtualBoard();
+            //のちに消す
+            //DisplayVirtualBoard();
             DisplayBoard();
+            //
+
+            System.Threading.Thread.Sleep(3000);
+
             for (int i = 0; i < FinalTurn; i++)
             {
+                
                 gamestate.CurrentPlayer = FieldObject.P1;
-                //getplayermove->MovePlayer
-                MovePlayer();
-                //GetPlayerMove();
-                //gamestateを更新
-                P1.SetGameState(gamestate);
-                //GetPlayerMove();
+                gamestate.NotCurrentPlayer = FieldObject.P2;
+                NextTurn();
+                ProcessTurn();
                 if (VorDCheck())
                 {
                     break;
                 }
-                DisplayVirtualBoard();
+
+                //のちに消す
+                //DisplayVirtualBoard();
                 DisplayBoard();
-                NextTurn();
+                //
 
                 gamestate.CurrentPlayer = FieldObject.P2;
-                //GetPlayerMve->MovePlayer
-                MovePlayer();
-                //GetPlayerMove();
-                //gamestateを更新
-                //gamestateを反転して渡す
-                P2.SetGameState(gamestate);
-                //GetPlayerMove();
+                gamestate.NotCurrentPlayer = FieldObject.P1;
+				NextTurn();
+                ProcessTurn();
                 if (VorDCheck())
                 {
                     break;
                 }
-                DisplayVirtualBoard();
+                //DisplayVirtualBoard();
                 DisplayBoard();
-                NextTurn();
+
 
 
             }
 
         }
+
+
+        private void ProcessTurn(){
+
+
+			if (gamestate.currentPlayer.Equals(FieldObject.P1))
+			{
+                P1.SetGameState(gamestate);
+			}
+			else
+			 if (gamestate.currentPlayer.Equals(FieldObject.P2))
+			{
+				//gamestateを反転して渡す
+				P2.SetGameState(gamestate);
+			}
+            MovePlayer();
+		}
 
         /// <summary>
         /// Gets the player move.
@@ -778,12 +779,7 @@ namespace Prototype.GameSystem
         /// </summary>
         private void GetPlayerMove(CancellationToken cancelToken)
         {
-
-            //gameState.CurrentPlayerMove = playerList[gameState.CurrentPlayer].GetMove();
-            //tmpMove->gamestate.currentGameplayerMoveを引数に
-            //ただし，tempMoveはAbstractplayerのmoveに変換する
-            //
-            try
+                    try
             {
                 while (true)
                 {
@@ -796,14 +792,15 @@ namespace Prototype.GameSystem
 
                     if (gamestate.currentPlayer.Equals(FieldObject.P1))
                     {
-                        gamestate.CurrePlayerntMove = P1.GetMove();
+                        gamestate.CurrentPlayerMove = P1.GetMove();
+                        break;
                     }
                     else
                 if (gamestate.currentPlayer.Equals(FieldObject.P2))
                     {
-                        gamestate.CurrePlayerntMove = P1.GetMove();
+					   gamestate.CurrentPlayerMove = P2.GetMove();
+                        break;
                     }
-                    //MoveGhost(TmpMove());
 
                 }
             }
@@ -812,7 +809,7 @@ namespace Prototype.GameSystem
                 //
                 // キャンセルされた.
                 //
-                Console.WriteLine(">>> {0}", ex.Message);
+                Debug.WriteLine(">>> {0}", ex.Message);
             }
 
         }
@@ -835,28 +832,30 @@ namespace Prototype.GameSystem
                 {
                     isTaskRunning = true;
 
+					Debug.WriteLine(">>> Task start");
                     task = new Task(() => GetPlayerMove(cts.Token));
                     task.Start();
-                    Debug.WriteLine("Task start");
+
                 }
                 else
                 {
+
                     endTime = DateTime.Now;
                     timeSpan = endTime - startTime;
                     if (timeSpan.TotalMilliseconds > gamestate.ThinkTime)
                     {
                         //スレッドを強制終了させる
                         cts.Cancel();
-
+                        Debug.WriteLine("Task Cancel");
                         isTaskTimeOut = true;
                         break;
                     }
 
 
-                    //スレッドが終了している時
-                    if (!task.IsCanceled || !task.IsCompleted)
+                    //スレッドが終了した時
+                    if (task.IsCanceled || task.IsCompleted)
                     {
-                        Debug.WriteLine("Thread end");
+						Debug.WriteLine(">>> Task end");
                         isTaskTimeOut = false;
                         break;
                     }
@@ -867,6 +866,9 @@ namespace Prototype.GameSystem
             if (!isTaskTimeOut)
             {
                 //		JudgeMove();
+                //まだgamestate.currentPlayerMoveにインスタンスがないと言われる
+                //Move tmp = new Move(gamestate.currentPlayerMove.Pos,gamestate.currentPlayerMove.GhostM);
+				MoveGhost(gamestate.currentPlayerMove);
                 if (timeSpan.TotalMilliseconds + processFPS < gamestate.ThinkTime)
                     Debug.WriteLine("{0} < {1}", timeSpan.TotalMilliseconds + processFPS,gamestate.ThinkTime);
                     Thread.Sleep(processFPS);

@@ -27,10 +27,13 @@ namespace Prototype.GameSystem
         private List<Ghost> p1GhostList = new List<Ghost>();
         private List<Ghost> p2GhostList = new List<Ghost>();
 
+        //protected int maxTurn;
         public Move currentPlayerMove = null;
-        public FieldObject currentPlayer = FieldObject.blank;
+        public FieldObject currentPlayer = FieldObject.P1;
+        public FieldObject notcurrentPlayer = FieldObject.P2;
 
         private const int THINKTIME = 500;
+        private int turnNum = 0;
 
         #endregion
 
@@ -95,7 +98,7 @@ namespace Prototype.GameSystem
             }
         }
 
-        public Move CurrePlayerntMove
+        public Move CurrentPlayerMove
         {
             get { return this.currentPlayerMove; }
             set { this.currentPlayerMove = value; }
@@ -107,15 +110,29 @@ namespace Prototype.GameSystem
             set { this.currentPlayer = value; }
 
         }
-        #endregion
 
-        #region [コンストラクタ]
-        /// <summary>
-        /// VirtualBoardコンストラクタ
-        /// </summary>
-        /// <param name="gtArray_1">1Pのゴースト初期配置</param>
-        /// <param name="gtArray_2">2Pのゴースト初期配置</param>
-        public GameState(GhostAttribute[,] gtArray_1, GhostAttribute[,] gtArray_2)
+        public FieldObject NotCurrentPlayer
+        {
+            get { return this.notcurrentPlayer; }
+            set { this.notcurrentPlayer = value; }
+        }
+
+        public int TurnNum{
+            get { return this.turnNum; }
+            set { this.turnNum = value; }
+        }
+
+    
+
+		#endregion
+
+			#region [コンストラクタ]
+			/// <summary>
+			/// VirtualBoardコンストラクタ
+			/// </summary>
+			/// <param name="gtArray_1">1Pのゴースト初期配置</param>
+			/// <param name="gtArray_2">2Pのゴースト初期配置</param>
+		public GameState(GhostAttribute[,] gtArray_1, GhostAttribute[,] gtArray_2)
         {
 
             //1Pは下側
