@@ -9,8 +9,9 @@ namespace Prototype.GameSystem
     /// <summary>
     /// 処理のための拡張した盤面を表すクラス
     /// </summary>
-    class GameState
+    class GameState 
     {
+        
         #region  [パブリック変数]
         /// <summary>
         /// ボード上のオブジェクト情報
@@ -416,15 +417,31 @@ namespace Prototype.GameSystem
             {
                 cloned.M_Board = (FieldObject[,])this.M_Board.Clone();
             }
-            if (this.P1ghostList != null)
-            {
-                cloned.P1ghostList = new List<Ghost>(this.P1ghostList);
+            if(this.boardState!=null){
+                cloned.BoardState = (FieldObject[,])this.BoardState.Clone();
             }
+
+            if (this.P1ghostList != null)
+                {
+                List<Ghost> tmp = new List<Ghost>();   
+                foreach(Ghost g in this.P1ghostList)
+                {
+                    tmp.Add(g.Clone());   
+                }
+                cloned.P1ghostList = tmp;
+                }
 
             if (this.P2ghostList != null)
             {
-                cloned.P2ghostList = new List<Ghost>(this.P2ghostList);
-            }
+
+                List<Ghost> tmp = new List<Ghost>();   
+                foreach(Ghost g in this.P2ghostList)
+                {
+                    tmp.Add(g.Clone());   
+                }
+                cloned.P2ghostList = tmp;
+                }
+			
             return cloned;
         }
 

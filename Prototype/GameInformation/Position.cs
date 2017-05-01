@@ -46,6 +46,13 @@ namespace Prototype.GameInformation
             this.Y = y;
         }
         #endregion
+
+        public Position Clone()
+        {
+			Position cloned = (Position)MemberwiseClone();
+            return cloned;
+		}
+
     }
 
 }

@@ -87,6 +87,24 @@ namespace Prototype.GameInformation
             InitPos = initPos;
             P = initPos;
         }
+
+        public Ghost Clone()
+        {
+			Ghost cloned = (Ghost)MemberwiseClone();
+			
+			if (this.InitPos != null)
+			{
+                cloned.InitPos = (Position)this.InitPos.Clone();
+			}
+
+			if (this.P != null)
+			{
+				cloned.P = (Position)this.P.Clone();
+			}
+
+			return cloned;
+        }
+
         #endregion
     }
 }

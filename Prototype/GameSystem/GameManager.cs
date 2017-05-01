@@ -268,12 +268,14 @@ namespace Prototype.GameSystem
             if (gamestate.currentPlayer.Equals(FieldObject.P1))
             {
                 P1.SetGameState(ConvertGameState(gamestate));
+                //P1.SetGameState(gamestate);
             }
             else
              if (gamestate.currentPlayer.Equals(FieldObject.P2))
             {
                 //gamestateを反転して渡す
                 P2.SetGameState(ConvertGameState(gamestate));
+            //P2.SetGameState(gamestate);
             }
             MovePlayer();
         }
@@ -287,11 +289,11 @@ namespace Prototype.GameSystem
             //ghostlistの初期位置と現在位置 (8,6になっているので)
             foreach(Ghost g in tmp.P1ghostList)
             {
-                g.P.X = g.P.X - 1;
+                g.P.X = g.P.X -1;
             }
 			foreach (Ghost g in tmp.P2ghostList)
 			{
-				g.P.X = g.P.X - 1;
+				g.P.X = g.P.X -1;
 			}
 
             //currentplayerが２Pならボードを反転
@@ -338,29 +340,23 @@ namespace Prototype.GameSystem
         {
             try
             {
-                while (true)
-                {
-                    //
-                    // もし、外部でキャンセルされていた場合
-                    // このメソッドはOperationCanceledExceptionを発生させる。
-                    //
-                    cancelToken.ThrowIfCancellationRequested();
+				//
+				// もし、外部でキャンセルされていた場合
+				// このメソッドはOperationCanceledExceptionを発生させる。
+				//
+				cancelToken.ThrowIfCancellationRequested();
 
-
-                    if (gamestate.currentPlayer.Equals(FieldObject.P1))
+				if (gamestate.currentPlayer.Equals(FieldObject.P1))
                     {
                         gamestate.CurrentPlayerMove = P1.GetMove();
-                        break;
+
                     }
                     else
                 if (gamestate.currentPlayer.Equals(FieldObject.P2))
                     {
                         gamestate.CurrentPlayerMove = P2.GetMove();
-                        break;
                     }
-
-                }
-            }
+				}
             catch (OperationCanceledException ex)
             {
                 //
@@ -396,26 +392,29 @@ namespace Prototype.GameSystem
                 }
                 else
                 {
-
+                    
                     endTime = DateTime.Now;
                     timeSpan = endTime - startTime;
                     if (timeSpan.TotalMilliseconds > gamestate.ThinkTime)
                     {
                         //スレッドを強制終了させる
                         cts.Cancel();
-                        Debug.WriteLine("Task Cancel");
+                        Debug.WriteLine("Task Cancel {0}",timeSpan.TotalMilliseconds);
+
                         isTaskTimeOut = true;
                         break;
                     }
 
+                    // スレッドが終了した時
+                    Debug.WriteLine(task.Status.ToString());
+					if (task.IsCanceled || task.IsCompleted)
+					{
+						Debug.WriteLine(">>> Task end");
+						isTaskTimeOut = false;
+						break;
+					}
 
-                    //スレッドが終了した時
-                    if (task.IsCanceled || task.IsCompleted)
-                    {
-                        Debug.WriteLine(">>> Task end");
-                        isTaskTimeOut = false;
-                        break;
-                    }
+
 
                 }
             }
