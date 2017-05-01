@@ -278,6 +278,20 @@ namespace Prototype.GameSystem
             MovePlayer();
         }
 
+        //与えるGameStateを変換する
+        public GameState ConvertGameState(GameState gs)
+        {
+            //複製を作成
+            GameState tmp = gs.Clone();
+            //変換するプロパティ
+            //ghostlistの初期位置と現在位置 (8,6になっているので)
+            //currentplayerが２Pならボードを反転
+            //さらにghostlistの２つもも反転
+
+            return tmp;
+        }
+
+
         /// <summary>
         /// Gets the player move.
         /// GamestateにplayerMoveを代入する
@@ -372,7 +386,7 @@ namespace Prototype.GameSystem
             {
                 JudgeMove(gamestate.currentPlayerMove);
                 if (timeSpan.TotalMilliseconds + processFPS < gamestate.ThinkTime)
-                    Debug.WriteLine("{0} < {1}", timeSpan.TotalMilliseconds + processFPS, gamestate.ThinkTime);
+                    //Debug.WriteLine("{0} < {1}", timeSpan.TotalMilliseconds + processFPS, gamestate.ThinkTime);
                 Thread.Sleep(processFPS);
             }
 
