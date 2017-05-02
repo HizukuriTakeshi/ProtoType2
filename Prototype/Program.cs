@@ -8,8 +8,8 @@ namespace Prototype
     {
         static void Main(string[] args)
         {
-
-            GameManager gameManager = new GameManager(new TestPlayer("a"), new TestPlayer("b"), 100,100);
+            
+            GameManager gameManager = new GameManager(new TestPlayer("a"), new TestPlayer("b"), 200,100);
 
             ProtoTypeUI protoType = new ProtoTypeUI(gameManager);
         }

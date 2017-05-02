@@ -242,6 +242,7 @@ namespace Prototype.GameSystem
                 //のちに消す
                 //DisplayVirtualBoard();
                 //DisplayBoard();
+                //Console.CursorLeft = 0;
                 //DisplayBoardState();
                 //
 
@@ -255,7 +256,8 @@ namespace Prototype.GameSystem
                 }
                 //DisplayVirtualBoard();
                 //DisplayBoard();
-				//DisplayBoardState();
+                Console.CursorLeft = 0;
+				DisplayBoardState();
 
 
 
@@ -270,6 +272,7 @@ namespace Prototype.GameSystem
             if (gamestate.currentPlayer.Equals(FieldObject.P1))
             {
                 P1.SetGameState(ConvertGameState(gamestate));
+
                 //P1.SetGameState(gamestate);
             }
             else
@@ -293,10 +296,12 @@ namespace Prototype.GameSystem
             foreach(Ghost g in tmp.P1ghostList)
             {
                 g.P.X = g.P.X -1;
+                g.InitPos.X = g.InitPos.X - 1;
             }
 			foreach (Ghost g in tmp.P2ghostList)
 			{
 				g.P.X = g.P.X -1;
+                g.InitPos.X = g.InitPos.X - 1;
 			}
 
             //currentplayerが２Pならボードを反転
@@ -309,6 +314,8 @@ namespace Prototype.GameSystem
 				{
 					g.P.X = 5-g.P.X;
 					g.P.Y = 5-g.P.Y;
+                    g.InitPos.X = 5 - g.InitPos.X;
+                    g.InitPos.X = 5 - g.InitPos.X;
 					//Console.WriteLine(g.P.X + " " + g.P.Y);
 
 				}
@@ -317,6 +324,8 @@ namespace Prototype.GameSystem
 				{
 					g.P.X = 5-g.P.X;
                     g.P.Y = 5-g.P.Y;
+					g.InitPos.X = 5 - g.InitPos.X;
+					g.InitPos.X = 5 - g.InitPos.X;
 				//Console.WriteLine(g.P.X + " " + g.P.Y);
                 }
             }
@@ -361,7 +370,7 @@ namespace Prototype.GameSystem
                     else
                 if (gamestate.currentPlayer.Equals(FieldObject.P2))
                     {
-                        gamestate.CurrentPlayerMove = P2.GetMove();
+                    gamestate.CurrentPlayerMove = ConvertPosition(P2.GetMove());
                     }
 				}
             catch (OperationCanceledException ex)
@@ -373,6 +382,40 @@ namespace Prototype.GameSystem
             }
 
         }
+
+        /// <summary>
+        /// 2P のポジションを反転する
+        /// Converts the position.
+        /// </summary>
+        /// <returns>The position.</returns>
+        /// <param name="player2move">Player2move.</param>
+        private Move ConvertPosition(Move player2move)
+        {
+            GhostMove gm = GhostMove.Down;
+            if(player2move.GhostM == GhostMove.Down)
+            {
+                gm = GhostMove.Up;
+            }
+            else
+			if (player2move.GhostM == GhostMove.Left)
+			{
+				gm = GhostMove.Right;
+			}
+			else
+			if (player2move.GhostM == GhostMove.Right)
+			{
+				gm = GhostMove.Left;
+			}
+			else
+			if (player2move.GhostM == GhostMove.Up)
+			{
+				gm = GhostMove.Down;
+			}
+
+                Move m = new Move(new Position(5 - player2move.Pos.X, 5 - player2move.Pos.Y), gm);
+            return m;
+        }
+
 
         private void MovePlayer()
         {
@@ -413,10 +456,12 @@ namespace Prototype.GameSystem
                     }
 
                     // スレッドが終了した時
-                    Debug.WriteLine(task.Status.ToString());
+                    //Debug.WriteLine(task.Status.ToString());
 					if (task.IsCanceled || task.IsCompleted)
 					{
 						Debug.WriteLine(">>> Task end");
+                        Debug.WriteLine(">>> {0}Turn {1}",gamestate.TurnNum,gamestate.currentPlayer);
+                        Debug.WriteLine(">>> {0} {1} {2}",gamestate.CurrentPlayerMove.Pos.X,gamestate.CurrentPlayerMove.Pos.Y, gamestate.CurrentPlayerMove.ghostM);
 						isTaskTimeOut = false;
 						break;
 					}
@@ -445,7 +490,7 @@ namespace Prototype.GameSystem
 
             //ゲームの終了条件を確認
             //ゴースト数での終了条件
-            Console.WriteLine("good_{0} {1}", gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.good), gamestate.NotCurrentPlayer);
+            //Console.WriteLine("good_{0} {1}", gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.good), gamestate.NotCurrentPlayer);
             if (gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.good).Equals(0))
             {
                 Console.WriteLine("{0} {1}", gamestate.NotCurrentPlayer, gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.good));
@@ -453,7 +498,7 @@ namespace Prototype.GameSystem
                 return true;
             }
 
-            Console.WriteLine("evil_{0} {1}", gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.evil), gamestate.NotCurrentPlayer);
+            //Console.WriteLine("evil_{0} {1}", gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.evil), gamestate.NotCurrentPlayer);
             if (gamestate.GetGhostCount(gamestate.NotCurrentPlayer, GhostAttribute.evil).Equals(0))
             {
                 Console.WriteLine("{0} Win!", gamestate.NotCurrentPlayer);
